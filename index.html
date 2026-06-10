@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#160d1b" />
+    <title>Pink Tetris</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <header class="brand" aria-label="Pink Tetris">
+        <span>PINK</span>
+        <strong>TETRIS</strong>
+      </header>
+
+      <section class="game-layout">
+        <aside class="panel stats-panel" aria-label="Game statistics">
+          <div class="stat">
+            <span class="label">Score</span>
+            <strong id="score">0</strong>
+          </div>
+          <div class="stat">
+            <span class="label">Lines</span>
+            <strong id="lines">0</strong>
+          </div>
+          <div class="stat">
+            <span class="label">Level</span>
+            <strong id="level">1</strong>
+          </div>
+        </aside>
+
+        <div class="board-frame">
+          <canvas
+            id="board"
+            width="300"
+            height="600"
+            aria-label="Tetris game board"
+          ></canvas>
+          <div class="overlay" id="overlay">
+            <div class="overlay-card">
+              <p class="eyebrow" id="overlayEyebrow">Ready?</p>
+              <h1 id="overlayTitle">Pink Tetris</h1>
+              <p id="overlayText">Stack the pieces. Clear the lines.</p>
+              <button id="startButton" type="button">Start game</button>
+            </div>
+          </div>
+        </div>
+
+        <aside class="panel next-panel" aria-label="Next piece and controls">
+          <div>
+            <span class="label">Next</span>
+            <canvas
+              id="next"
+              width="132"
+              height="110"
+              aria-label="Next Tetris piece"
+            ></canvas>
+          </div>
+          <div class="controls-list">
+            <span class="label">Controls</span>
+            <p><kbd>←</kbd><kbd>→</kbd> Move</p>
+            <p><kbd>↑</kbd> Rotate</p>
+            <p><kbd>↓</kbd> Soft drop</p>
+            <p><kbd>Space</kbd> Hard drop</p>
+            <p><kbd>P</kbd> Pause</p>
+          </div>
+          <button class="secondary-button" id="pauseButton" type="button" disabled>
+            Pause
+          </button>
+        </aside>
+      </section>
+
+      <section class="touch-controls" aria-label="Touch controls">
+        <button type="button" data-action="left" aria-label="Move left">←</button>
+        <button type="button" data-action="rotate" aria-label="Rotate">↻</button>
+        <button type="button" data-action="right" aria-label="Move right">→</button>
+        <button type="button" data-action="down" aria-label="Soft drop">↓</button>
+        <button class="wide" type="button" data-action="drop">Drop</button>
+      </section>
+
+      <footer>Arrow keys to move · Space to drop · P to pause</footer>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
