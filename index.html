@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#160d1b" />
     <title>Pink Tetris</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body>
     <main class="game-shell">
@@ -35,7 +35,7 @@
             id="board"
             width="300"
             height="600"
-            aria-label="Tetris game board"
+            aria-label="Interactive Tetris game board"
           ></canvas>
           <div class="overlay" id="overlay">
             <div class="overlay-card">
@@ -71,17 +71,33 @@
         </aside>
       </section>
 
-      <section class="touch-controls" aria-label="Touch controls">
-        <button type="button" data-action="left" aria-label="Move left">←</button>
-        <button type="button" data-action="rotate" aria-label="Rotate">↻</button>
-        <button type="button" data-action="right" aria-label="Move right">→</button>
-        <button type="button" data-action="down" aria-label="Soft drop">↓</button>
-        <button class="wide" type="button" data-action="drop">Drop</button>
+      <section class="game-controls" aria-label="Mouse and touch controls">
+        <span class="label controls-label">Touch controls</span>
+        <button type="button" data-action="left" aria-label="Move left">
+          <span aria-hidden="true">←</span>
+          <small>Left</small>
+        </button>
+        <button type="button" data-action="rotate" aria-label="Rotate">
+          <span aria-hidden="true">↻</span>
+          <small>Rotate</small>
+        </button>
+        <button type="button" data-action="right" aria-label="Move right">
+          <span aria-hidden="true">→</span>
+          <small>Right</small>
+        </button>
+        <button type="button" data-action="down" aria-label="Soft drop">
+          <span aria-hidden="true">↓</span>
+          <small>Down</small>
+        </button>
+        <button class="wide" type="button" data-action="drop">
+          <span aria-hidden="true">⇊</span>
+          <small>Drop</small>
+        </button>
       </section>
 
-      <footer>Arrow keys to move · Space to drop · P to pause</footer>
+      <footer>Move the cursor to guide · Click to rotate · Double-click to drop</footer>
     </main>
 
-    <script src="game.js"></script>
+    <script src="game.js?v=3"></script>
   </body>
 </html>

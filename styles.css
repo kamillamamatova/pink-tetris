@@ -134,6 +134,8 @@ button {
   display: block;
   width: 300px;
   height: 600px;
+  cursor: crosshair;
+  touch-action: none;
 }
 
 .overlay {
@@ -184,7 +186,7 @@ button {
 
 #startButton,
 .secondary-button,
-.touch-controls button {
+.game-controls button {
   border: 1px solid rgba(255, 255, 255, 0.16);
   cursor: pointer;
   font-weight: 700;
@@ -268,8 +270,44 @@ kbd {
   opacity: 0.35;
 }
 
-.touch-controls {
+.game-controls {
   display: none;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  width: min(100%, 520px);
+  margin: 14px auto 0;
+}
+
+.controls-label {
+  grid-column: 1 / -1;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.game-controls button {
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  min-height: 54px;
+  padding: 7px 4px;
+  color: var(--light-pink);
+  border-color: var(--line);
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.game-controls button span {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.game-controls button small {
+  color: var(--muted);
+  font-family: system-ui, sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 footer {
@@ -353,21 +391,26 @@ footer {
     font-size: 0.65rem;
   }
 
-  .touch-controls {
+  .game-controls {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
     gap: 7px;
     margin-top: 10px;
   }
 
-  .touch-controls button {
-    min-height: 45px;
-    color: var(--light-pink);
-    border-color: var(--line);
-    background: var(--surface);
+  .controls-label {
+    display: none;
   }
 
-  .touch-controls .wide {
+  .game-controls button {
+    min-height: 45px;
+    padding: 5px 2px;
+  }
+
+  .game-controls button small {
+    font-size: 0.55rem;
+  }
+
+  .game-controls .wide {
     font-size: 0.68rem;
   }
 

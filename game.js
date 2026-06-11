@@ -41,6 +41,7 @@ const COLORS = {
 };
 
 const boardCanvas = document.querySelector("#board");
+const boardFrame = document.querySelector(".board-frame");
 const boardContext = boardCanvas.getContext("2d");
 const nextCanvas = document.querySelector("#next");
 const nextContext = nextCanvas.getContext("2d");
@@ -67,6 +68,7 @@ let gameOver = false;
 let lastTime = 0;
 let dropCounter = 0;
 let animationFrame = null;
+let clickTimer = null;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -158,6 +160,46 @@ function moveHorizontal(direction) {
   draw();
 }
 
+function guidePieceToPointer(event) {
+  if (!canControl() || event.pointerType === "touch") return;
+
+  const bounds = boardFrame.getBoundingClientRect();
+  if (
+    event.clientX < bounds.left ||
+    event.clientX > bounds.right ||
+    event.clientY < bounds.top ||
+    event.clientY > bounds.bottom
+  ) {
+    return;
+  }
+
+  const canvasX = ((event.clientX - bounds.left) / bounds.width) * boardCanvas.width;
+  const canvasY = ((event.clientY - bounds.top) / bounds.height) * boardCanvas.height;
+  const pieceWidth = currentPiece.matrix[0].length;
+  const pieceHeight = currentPiece.matrix.length;
+  const targetX = Math.max(
+    0,
+    Math.min(COLS - pieceWidth, Math.floor(canvasX / BLOCK - pieceWidth / 2)),
+  );
+  const targetY = Math.max(
+    currentPiece.y,
+    Math.min(ROWS - pieceHeight, Math.floor(canvasY / BLOCK - pieceHeight / 2)),
+  );
+
+  if (!collide(currentPiece, targetX - currentPiece.x, 0)) {
+    currentPiece.x = targetX;
+  }
+
+  while (currentPiece.y < targetY && !collide(currentPiece, 0, 1)) {
+    currentPiece.y += 1;
+    score += 1;
+  }
+
+  dropCounter = 0;
+  updateStats();
+  draw();
+}
+
 function moveDown(manual = true) {
   if (!canControl()) return;
 
@@ -182,6 +224,7 @@ function hardDrop() {
     distance += 1;
   }
   score += distance * 2;
+  updateStats();
   lockPiece();
 }
 
@@ -303,6 +346,8 @@ function draw() {
   }
 
   if (currentPiece) {
+    boardCanvas.dataset.pieceX = currentPiece.x;
+    boardCanvas.dataset.pieceY = currentPiece.y;
     drawPiece(currentPiece, getGhostY(), true);
     drawPiece(currentPiece, currentPiece.y, false);
   }
@@ -438,6 +483,19 @@ document.querySelectorAll("[data-action]").forEach((button) => {
     handleAction(button.dataset.action);
   });
 });
+
+document.addEventListener("pointermove", guidePieceToPointer);
+boardCanvas.addEventListener("click", () => {
+  if (!canControl()) return;
+  clearTimeout(clickTimer);
+  clickTimer = setTimeout(rotatePiece, 220);
+});
+boardCanvas.addEventListener("dblclick", (event) => {
+  event.preventDefault();
+  clearTimeout(clickTimer);
+  hardDrop();
+});
+boardCanvas.addEventListener("contextmenu", (event) => event.preventDefault());
 
 startButton.addEventListener("click", () => {
   if (paused) {
