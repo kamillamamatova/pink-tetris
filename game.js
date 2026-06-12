@@ -67,6 +67,7 @@ let paused = false;
 let gameOver = false;
 let animatingDrop = false;
 let landingEffect = null;
+let lineClearEffect = null;
 let lastTime = 0;
 let dropCounter = 0;
 let animationFrame = null;
@@ -105,6 +106,7 @@ function resetGame() {
   paused = false;
   animatingDrop = false;
   landingEffect = null;
+  lineClearEffect = null;
   currentPiece = takeFromBag();
   nextPiece = takeFromBag();
   dropCounter = 0;
@@ -129,7 +131,7 @@ function update(time = 0) {
   const delta = time - lastTime;
   lastTime = time;
 
-  if (animatingDrop) {
+  if (animatingDrop || lineClearEffect) {
     draw();
     animationFrame = requestAnimationFrame(update);
     return;
@@ -326,7 +328,17 @@ function lockPiece() {
     }
   }
 
-  clearLines();
+  const completedRows = getCompletedRows();
+  if (completedRows.length > 0) {
+    currentPiece = null;
+    startLineClearEffect(completedRows);
+    return;
+  }
+
+  spawnNextPiece();
+}
+
+function spawnNextPiece() {
   currentPiece = nextPiece;
   nextPiece = takeFromBag();
   dropCounter = 0;
@@ -339,25 +351,58 @@ function lockPiece() {
   draw();
 }
 
-function clearLines() {
-  let cleared = 0;
-
-  for (let y = ROWS - 1; y >= 0; y -= 1) {
-    if (board[y].every(Boolean)) {
-      board.splice(y, 1);
-      board.unshift(Array(COLS).fill(null));
-      cleared += 1;
-      y += 1;
-    }
+function getCompletedRows() {
+  const completedRows = [];
+  for (let y = 0; y < ROWS; y += 1) {
+    if (board[y].every(Boolean)) completedRows.push(y);
   }
+  return completedRows;
+}
 
-  if (cleared > 0) {
+function startLineClearEffect(rows) {
+  lineClearEffect = {
+    rows,
+    startedAt: performance.now(),
+    duration: 460,
+    particles: createLineClearParticles(rows),
+  };
+
+  window.setTimeout(() => {
+    if (!lineClearEffect) return;
+
+    const cleared = lineClearEffect.rows.length;
+    for (const row of [...lineClearEffect.rows].sort((a, b) => b - a)) {
+      board.splice(row, 1);
+    }
+    for (let index = 0; index < cleared; index += 1) {
+      board.unshift(Array(COLS).fill(null));
+    }
+
     const points = [0, 100, 300, 500, 800];
     score += points[cleared] * level;
     lines += cleared;
     level = Math.floor(lines / 10) + 1;
     updateStats();
+    lineClearEffect = null;
+    spawnNextPiece();
+  }, lineClearEffect.duration);
+}
+
+function createLineClearParticles(rows) {
+  const particles = [];
+  for (const row of rows) {
+    for (let x = 0; x < COLS; x += 1) {
+      const direction = x < COLS / 2 ? -1 : 1;
+      particles.push({
+        x: (x + 0.5) * BLOCK,
+        y: (row + 0.5) * BLOCK,
+        dx: direction * (20 + Math.random() * 35),
+        dy: (Math.random() - 0.5) * 24,
+        size: 2 + Math.random() * 3,
+      });
+    }
   }
+  return particles;
 }
 
 function endGame() {
@@ -391,7 +436,7 @@ function showOverlay(eyebrow, title, text, buttonText) {
 }
 
 function canControl() {
-  return running && !paused && !gameOver && !animatingDrop && currentPiece;
+  return running && !paused && !gameOver && !animatingDrop && !lineClearEffect && currentPiece;
 }
 
 function getGhostY() {
@@ -418,6 +463,7 @@ function draw() {
   }
 
   if (landingEffect) drawLandingEffect();
+  if (lineClearEffect) drawLineClearEffect();
   drawNext();
 }
 
@@ -437,6 +483,38 @@ function drawLandingEffect() {
   boardContext.shadowBlur = 0;
   boardContext.fillStyle = "#fff5fb";
   for (const particle of landingEffect.particles) {
+    const x = particle.x + particle.dx * progress;
+    const y = particle.y + particle.dy * progress;
+    const size = particle.size * (1 - progress);
+    boardContext.fillRect(x - size / 2, y - size / 2, size, size);
+  }
+  boardContext.restore();
+}
+
+function drawLineClearEffect() {
+  const progress = Math.min(
+    1,
+    (performance.now() - lineClearEffect.startedAt) / lineClearEffect.duration,
+  );
+  const flash = 0.45 + Math.sin(progress * Math.PI * 6) * 0.4;
+
+  boardContext.save();
+  boardContext.globalCompositeOperation = "screen";
+  boardContext.shadowColor = "#ff8fca";
+  boardContext.shadowBlur = 22;
+
+  for (const row of lineClearEffect.rows) {
+    const inset = progress * (boardCanvas.width / 2);
+    const width = Math.max(0, boardCanvas.width - inset * 2);
+    boardContext.globalAlpha = Math.max(0, 1 - progress) * flash;
+    boardContext.fillStyle = "#fff2fa";
+    boardContext.fillRect(inset, row * BLOCK + 2, width, BLOCK - 4);
+  }
+
+  boardContext.shadowBlur = 0;
+  boardContext.fillStyle = "#ffd4ec";
+  boardContext.globalAlpha = 1 - progress;
+  for (const particle of lineClearEffect.particles) {
     const x = particle.x + particle.dx * progress;
     const y = particle.y + particle.dy * progress;
     const size = particle.size * (1 - progress);
