@@ -22,6 +22,7 @@ Then visit `http://localhost:8000`.
 - Space: hard drop
 - P: pause
 
-With a mouse, move the cursor across the board to guide the falling piece. Move
-the cursor lower to soft-drop, click to rotate, and double-click to hard-drop.
-Touchscreen controls appear below the board on smaller screens.
+With a mouse, move the cursor left or right across the board to guide the falling
+piece while it descends at the normal game speed. Click to rotate and
+double-click to hard-drop. Touchscreen controls appear below the board on
+smaller screens.

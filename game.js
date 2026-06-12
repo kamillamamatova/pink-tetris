@@ -164,40 +164,18 @@ function guidePieceToPointer(event) {
   if (!canControl() || event.pointerType === "touch") return;
 
   const bounds = boardFrame.getBoundingClientRect();
-  if (
-    event.clientX < bounds.left ||
-    event.clientX > bounds.right ||
-    event.clientY < bounds.top ||
-    event.clientY > bounds.bottom
-  ) {
-    return;
-  }
-
-  const canvasX = ((event.clientX - bounds.left) / bounds.width) * boardCanvas.width;
-  const canvasY = ((event.clientY - bounds.top) / bounds.height) * boardCanvas.height;
+  const relativeX = Math.max(0, Math.min(bounds.width, event.clientX - bounds.left));
+  const canvasX = (relativeX / bounds.width) * boardCanvas.width;
   const pieceWidth = currentPiece.matrix[0].length;
-  const pieceHeight = currentPiece.matrix.length;
   const targetX = Math.max(
     0,
     Math.min(COLS - pieceWidth, Math.floor(canvasX / BLOCK - pieceWidth / 2)),
   );
-  const targetY = Math.max(
-    currentPiece.y,
-    Math.min(ROWS - pieceHeight, Math.floor(canvasY / BLOCK - pieceHeight / 2)),
-  );
 
-  if (!collide(currentPiece, targetX - currentPiece.x, 0)) {
+  if (targetX !== currentPiece.x && !collide(currentPiece, targetX - currentPiece.x, 0)) {
     currentPiece.x = targetX;
+    draw();
   }
-
-  while (currentPiece.y < targetY && !collide(currentPiece, 0, 1)) {
-    currentPiece.y += 1;
-    score += 1;
-  }
-
-  dropCounter = 0;
-  updateStats();
-  draw();
 }
 
 function moveDown(manual = true) {
@@ -485,6 +463,7 @@ document.querySelectorAll("[data-action]").forEach((button) => {
 });
 
 document.addEventListener("pointermove", guidePieceToPointer);
+document.addEventListener("mousemove", guidePieceToPointer);
 boardCanvas.addEventListener("click", () => {
   if (!canControl()) return;
   clearTimeout(clickTimer);
