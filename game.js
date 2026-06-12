@@ -68,7 +68,6 @@ let gameOver = false;
 let lastTime = 0;
 let dropCounter = 0;
 let animationFrame = null;
-let clickTimer = null;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -160,22 +159,35 @@ function moveHorizontal(direction) {
   draw();
 }
 
-function guidePieceToPointer(event) {
-  if (!canControl() || event.pointerType === "touch") return;
-
+function getPointerColumn(event) {
   const bounds = boardFrame.getBoundingClientRect();
   const relativeX = Math.max(0, Math.min(bounds.width, event.clientX - bounds.left));
   const canvasX = (relativeX / bounds.width) * boardCanvas.width;
   const pieceWidth = currentPiece.matrix[0].length;
-  const targetX = Math.max(
+  return Math.max(
     0,
     Math.min(COLS - pieceWidth, Math.floor(canvasX / BLOCK - pieceWidth / 2)),
   );
+}
 
+function guidePieceToPointer(event) {
+  if (!canControl() || event.pointerType === "touch") return;
+
+  const targetX = getPointerColumn(event);
   if (targetX !== currentPiece.x && !collide(currentPiece, targetX - currentPiece.x, 0)) {
     currentPiece.x = targetX;
     draw();
   }
+}
+
+function placePieceAtPointer(event) {
+  if (!canControl()) return;
+
+  const targetX = getPointerColumn(event);
+  if (!collide(currentPiece, targetX - currentPiece.x, 0)) {
+    currentPiece.x = targetX;
+  }
+  hardDrop();
 }
 
 function moveDown(manual = true) {
@@ -464,16 +476,7 @@ document.querySelectorAll("[data-action]").forEach((button) => {
 
 document.addEventListener("pointermove", guidePieceToPointer);
 document.addEventListener("mousemove", guidePieceToPointer);
-boardCanvas.addEventListener("click", () => {
-  if (!canControl()) return;
-  clearTimeout(clickTimer);
-  clickTimer = setTimeout(rotatePiece, 220);
-});
-boardCanvas.addEventListener("dblclick", (event) => {
-  event.preventDefault();
-  clearTimeout(clickTimer);
-  hardDrop();
-});
+boardCanvas.addEventListener("click", placePieceAtPointer);
 boardCanvas.addEventListener("contextmenu", (event) => event.preventDefault());
 
 startButton.addEventListener("click", () => {
