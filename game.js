@@ -172,11 +172,15 @@ function moveHorizontal(direction) {
   draw();
 }
 
-function getPointerColumn(event) {
+function getPointerCanvasX(event) {
   const bounds = boardFrame.getBoundingClientRect();
   const relativeX = Math.max(0, Math.min(bounds.width, event.clientX - bounds.left));
-  const canvasX = (relativeX / bounds.width) * boardCanvas.width;
-  const pieceWidth = currentPiece.matrix[0].length;
+  return (relativeX / bounds.width) * boardCanvas.width;
+}
+
+function getPointerColumn(event, matrix = currentPiece.matrix) {
+  const canvasX = getPointerCanvasX(event);
+  const pieceWidth = matrix[0].length;
   return Math.max(
     0,
     Math.min(COLS - pieceWidth, Math.floor(canvasX / BLOCK - pieceWidth / 2)),
@@ -186,19 +190,21 @@ function getPointerColumn(event) {
 function guidePieceToPointer(event) {
   if (!canControl() || event.pointerType === "touch") return;
 
-  const targetX = getPointerColumn(event);
-  if (targetX !== currentPiece.x && !collide(currentPiece, targetX - currentPiece.x, 0)) {
-    currentPiece.x = targetX;
-    draw();
-  }
+  const bestFit = getBestPointerFit(event);
+  if (!bestFit) return;
+
+  currentPiece.matrix = bestFit.matrix;
+  currentPiece.x = bestFit.x;
+  draw();
 }
 
 function placePieceAtPointer(event) {
   if (!canControl()) return;
 
-  const targetX = getPointerColumn(event);
-  if (!collide(currentPiece, targetX - currentPiece.x, 0)) {
-    currentPiece.x = targetX;
+  const bestFit = getBestPointerFit(event);
+  if (bestFit) {
+    currentPiece.matrix = bestFit.matrix;
+    currentPiece.x = bestFit.x;
   }
   flashDrop();
 }
@@ -295,22 +301,122 @@ function createLandingParticles(piece, landingY) {
   return particles;
 }
 
-function rotatePiece() {
-  if (!canControl() || currentPiece.type === "O") return;
+function getRotatedMatrix(matrix) {
+  return matrix[0].map((_, index) => matrix.map((row) => row[index]).reverse());
+}
 
-  const rotated = currentPiece.matrix[0].map((_, index) =>
-    currentPiece.matrix.map((row) => row[index]).reverse(),
-  );
+function getLandingY(piece, matrix = piece.matrix, x = piece.x) {
+  let landingY = piece.y;
+  const probe = { ...piece, x, matrix };
+  while (!collide(probe, 0, landingY - piece.y + 1, matrix)) landingY += 1;
+  return landingY;
+}
 
-  const kicks = [0, -1, 1, -2, 2];
-  for (const kick of kicks) {
-    if (!collide(currentPiece, kick, 0, rotated)) {
-      currentPiece.matrix = rotated;
-      currentPiece.x += kick;
-      draw();
-      return;
+function getOrientationKey(matrix) {
+  return matrix.map((row) => row.join("")).join("/");
+}
+
+function getOrientations(matrix) {
+  const orientations = [];
+  const seen = new Set();
+  let candidate = matrix;
+
+  for (let turns = 0; turns < 4; turns += 1) {
+    const key = getOrientationKey(candidate);
+    if (!seen.has(key)) {
+      seen.add(key);
+      orientations.push({ matrix: candidate, turns });
+    }
+    candidate = getRotatedMatrix(candidate);
+  }
+  return orientations;
+}
+
+function getLandingContact(matrix, x, landingY) {
+  let contact = 0;
+
+  for (let y = 0; y < matrix.length; y += 1) {
+    for (let cellX = 0; cellX < matrix[y].length; cellX += 1) {
+      if (!matrix[y][cellX]) continue;
+      const boardX = x + cellX;
+      const boardY = landingY + y;
+
+      if (boardY === ROWS - 1 || board[boardY + 1]?.[boardX]) contact += 3;
+      if (boardX === 0 || board[boardY]?.[boardX - 1]) contact += 1;
+      if (boardX === COLS - 1 || board[boardY]?.[boardX + 1]) contact += 1;
     }
   }
+  return contact;
+}
+
+function getBestPointerFit(event) {
+  const cursorColumn = getPointerCanvasX(event) / BLOCK;
+  const candidates = [];
+
+  for (const orientation of getOrientations(currentPiece.matrix)) {
+    const preferredX = Math.round(cursorColumn - orientation.matrix[0].length / 2);
+
+    for (let offset = 0; offset < COLS; offset += 1) {
+      const positions =
+        offset === 0 ? [preferredX] : [preferredX - offset, preferredX + offset];
+
+      for (const x of positions) {
+        if (x < 0 || x + orientation.matrix[0].length > COLS) continue;
+        if (collide(currentPiece, x - currentPiece.x, 0, orientation.matrix)) continue;
+
+        const landingY = getLandingY(currentPiece, orientation.matrix, x);
+        candidates.push({
+          matrix: orientation.matrix,
+          turns: orientation.turns,
+          x,
+          cursorDistance: Math.abs(x + orientation.matrix[0].length / 2 - cursorColumn),
+          contact: getLandingContact(orientation.matrix, x, landingY),
+          landingY,
+        });
+      }
+
+      if (candidates.some((candidate) => candidate.matrix === orientation.matrix)) break;
+    }
+  }
+
+  candidates.sort(
+    (a, b) =>
+      b.contact - a.contact ||
+      a.cursorDistance - b.cursorDistance ||
+      b.landingY - a.landingY ||
+      a.turns - b.turns,
+  );
+  return candidates[0] ?? null;
+}
+
+function rotatePiece(pointerEvent = null) {
+  if (!canControl() || currentPiece.type === "O") return;
+
+  const rotated = getRotatedMatrix(currentPiece.matrix);
+  const preferredX = pointerEvent
+    ? getPointerColumn(pointerEvent, rotated)
+    : Math.max(0, Math.min(COLS - rotated[0].length, currentPiece.x));
+  const candidates = [];
+
+  for (let offset = 0; offset < COLS; offset += 1) {
+    const positions = offset === 0 ? [preferredX] : [preferredX - offset, preferredX + offset];
+    for (const x of positions) {
+      if (x < 0 || x + rotated[0].length > COLS) continue;
+      if (collide(currentPiece, x - currentPiece.x, 0, rotated)) continue;
+      candidates.push({
+        x,
+        landingY: getLandingY(currentPiece, rotated, x),
+        distance: Math.abs(x - preferredX),
+      });
+    }
+  }
+
+  candidates.sort((a, b) => a.distance - b.distance || b.landingY - a.landingY);
+  if (candidates.length === 0) return;
+
+  currentPiece.matrix = rotated;
+  currentPiece.x = candidates[0].x;
+  draw();
 }
 
 function lockPiece() {
@@ -458,6 +564,7 @@ function draw() {
   if (currentPiece) {
     boardCanvas.dataset.pieceX = currentPiece.x;
     boardCanvas.dataset.pieceY = currentPiece.y;
+    boardCanvas.dataset.pieceShape = getOrientationKey(currentPiece.matrix);
     drawPiece(currentPiece, getGhostY(), true);
     drawPiece(currentPiece, currentPiece.y, false);
   }
