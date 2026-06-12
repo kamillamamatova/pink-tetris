@@ -65,6 +65,8 @@ let level = 1;
 let running = false;
 let paused = false;
 let gameOver = false;
+let animatingDrop = false;
+let landingEffect = null;
 let lastTime = 0;
 let dropCounter = 0;
 let animationFrame = null;
@@ -101,6 +103,8 @@ function resetGame() {
   level = 1;
   gameOver = false;
   paused = false;
+  animatingDrop = false;
+  landingEffect = null;
   currentPiece = takeFromBag();
   nextPiece = takeFromBag();
   dropCounter = 0;
@@ -124,6 +128,13 @@ function update(time = 0) {
 
   const delta = time - lastTime;
   lastTime = time;
+
+  if (animatingDrop) {
+    draw();
+    animationFrame = requestAnimationFrame(update);
+    return;
+  }
+
   dropCounter += delta;
 
   if (dropCounter >= getDropInterval()) {
@@ -187,7 +198,7 @@ function placePieceAtPointer(event) {
   if (!collide(currentPiece, targetX - currentPiece.x, 0)) {
     currentPiece.x = targetX;
   }
-  hardDrop();
+  flashDrop();
 }
 
 function moveDown(manual = true) {
@@ -216,6 +227,70 @@ function hardDrop() {
   score += distance * 2;
   updateStats();
   lockPiece();
+}
+
+function flashDrop() {
+  if (!canControl()) return;
+
+  let landingY = currentPiece.y;
+  while (!collide(currentPiece, 0, landingY - currentPiece.y + 1)) {
+    landingY += 1;
+  }
+
+  const distance = landingY - currentPiece.y;
+  if (distance === 0) {
+    lockPiece();
+    return;
+  }
+
+  animatingDrop = true;
+  landingEffect = {
+    landingY,
+    startedAt: performance.now(),
+    duration: 280,
+    particles: createLandingParticles(currentPiece, landingY),
+  };
+
+  window.setTimeout(() => {
+    if (!running || paused || gameOver) {
+      animatingDrop = false;
+      landingEffect = null;
+      return;
+    }
+
+    currentPiece.y = landingY;
+    score += distance * 2;
+    updateStats();
+    landingEffect = null;
+    animatingDrop = false;
+    dropCounter = 0;
+    lockPiece();
+  }, landingEffect.duration);
+}
+
+function createLandingParticles(piece, landingY) {
+  const particles = [];
+
+  for (let y = 0; y < piece.matrix.length; y += 1) {
+    for (let x = 0; x < piece.matrix[y].length; x += 1) {
+      if (!piece.matrix[y][x]) continue;
+      const centerX = (piece.x + x + 0.5) * BLOCK;
+      const centerY = (landingY + y + 0.5) * BLOCK;
+
+      for (let index = 0; index < 4; index += 1) {
+        const angle = (Math.PI * 2 * index) / 4 + Math.random() * 0.5;
+        particles.push({
+          x: centerX,
+          y: centerY,
+          dx: Math.cos(angle) * (8 + Math.random() * 12),
+          dy: Math.sin(angle) * (8 + Math.random() * 12),
+          size: 1.5 + Math.random() * 2.5,
+        });
+      }
+    }
+  }
+
+  return particles;
 }
 
 function rotatePiece() {
@@ -316,7 +391,7 @@ function showOverlay(eyebrow, title, text, buttonText) {
 }
 
 function canControl() {
-  return running && !paused && !gameOver && currentPiece;
+  return running && !paused && !gameOver && !animatingDrop && currentPiece;
 }
 
 function getGhostY() {
@@ -342,7 +417,32 @@ function draw() {
     drawPiece(currentPiece, currentPiece.y, false);
   }
 
+  if (landingEffect) drawLandingEffect();
   drawNext();
+}
+
+function drawLandingEffect() {
+  const progress = Math.min(
+    1,
+    (performance.now() - landingEffect.startedAt) / landingEffect.duration,
+  );
+  const pulse = 0.55 + Math.sin(progress * Math.PI * 4) * 0.35;
+
+  boardContext.save();
+  boardContext.globalAlpha = Math.max(0, 1 - progress) * pulse;
+  boardContext.shadowColor = "#ffb8df";
+  boardContext.shadowBlur = 24;
+  drawPiece(currentPiece, landingEffect.landingY, false);
+
+  boardContext.shadowBlur = 0;
+  boardContext.fillStyle = "#fff5fb";
+  for (const particle of landingEffect.particles) {
+    const x = particle.x + particle.dx * progress;
+    const y = particle.y + particle.dy * progress;
+    const size = particle.size * (1 - progress);
+    boardContext.fillRect(x - size / 2, y - size / 2, size, size);
+  }
+  boardContext.restore();
 }
 
 function drawGrid() {
