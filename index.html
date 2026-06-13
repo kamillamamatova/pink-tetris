@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#160d1b" />
     <title>Pink Tetris</title>
-    <link rel="stylesheet" href="styles.css?v=7" />
+    <link rel="stylesheet" href="styles.css?v=8" />
   </head>
   <body>
     <main class="game-shell">
@@ -53,6 +53,16 @@
                 <p class="eyebrow" id="overlayEyebrow">Ready?</p>
                 <h1 id="overlayTitle">Pink Tetris</h1>
                 <p id="overlayText">Stack the pieces. Clear the lines.</p>
+                <section class="high-scores" aria-labelledby="highScoresTitle">
+                  <div class="high-scores-heading">
+                    <h2 id="highScoresTitle">High Scores</h2>
+                    <span>Saved locally</span>
+                  </div>
+                  <ol id="highScoresList"></ol>
+                  <p class="high-scores-empty" id="highScoresEmpty">
+                    Finish a game to set the first score.
+                  </p>
+                </section>
                 <button id="startButton" type="button">Start game</button>
               </div>
 
@@ -230,6 +240,6 @@
       <footer>Move to aim · Click to place · Double-click to hold</footer>
     </main>
 
-    <script src="game.js?v=29"></script>
+    <script src="game.js?v=30"></script>
   </body>
 </html>

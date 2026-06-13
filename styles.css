@@ -238,6 +238,84 @@ button {
   box-shadow: 0 8px 28px rgba(255, 79, 167, 0.25);
 }
 
+.high-scores {
+  width: 100%;
+  margin: 18px 0;
+  padding: 12px;
+  text-align: left;
+  border: 1px solid rgba(255, 193, 226, 0.24);
+  background: rgba(255, 79, 167, 0.06);
+}
+
+.high-scores-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.high-scores-heading h2 {
+  margin: 0;
+  color: var(--light-pink);
+  font-size: 0.76rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.high-scores-heading span {
+  color: #846879;
+  font-family: system-ui, sans-serif;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+}
+
+#highScoresList {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#highScoresList li {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: center;
+  gap: 7px;
+  min-height: 24px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 193, 226, 0.1);
+}
+
+#highScoresList li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+#highScoresList li > span {
+  color: var(--hot-pink);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+#highScoresList strong {
+  font-size: 0.82rem;
+}
+
+#highScoresList small {
+  color: var(--muted);
+  font-family: system-ui, sans-serif;
+  font-size: 0.55rem;
+}
+
+.overlay .high-scores-empty:not(.eyebrow) {
+  margin: 4px 0 0;
+  color: #947a8c;
+  font-size: 0.65rem;
+  text-align: center;
+}
+
 .overlay-view.hidden,
 #overlayMessage.hidden {
   display: none;

@@ -71,6 +71,30 @@ const ghostToggle = document.querySelector("#ghostToggle");
 const effectsToggle = document.querySelector("#effectsToggle");
 const resetScoresButton = document.querySelector("#resetScoresButton");
 const resetOptionsButton = document.querySelector("#resetOptionsButton");
+const highScoresList = document.querySelector("#highScoresList");
+const highScoresEmpty = document.querySelector("#highScoresEmpty");
+
+const HIGH_SCORE_STORAGE_KEY = "pinkTetrisHighScores";
+const HIGH_SCORE_LIMIT = 5;
+
+// Replace these methods with API calls when the leaderboard has a backend.
+const highScoreRepository = {
+  load() {
+    try {
+      const savedScores = JSON.parse(localStorage.getItem(HIGH_SCORE_STORAGE_KEY) || "[]");
+      return Array.isArray(savedScores) ? savedScores : [];
+    } catch {
+      return [];
+    }
+  },
+  save(scores) {
+    localStorage.setItem(HIGH_SCORE_STORAGE_KEY, JSON.stringify(scores));
+  },
+  reset() {
+    localStorage.removeItem(HIGH_SCORE_STORAGE_KEY);
+    localStorage.removeItem("pinkTetrisHighScore");
+  },
+};
 
 let board = createBoard();
 let currentPiece = null;
@@ -623,7 +647,50 @@ function endGame() {
   running = false;
   gameOver = true;
   pauseButton.disabled = true;
+  saveHighScore();
   showOverlay("Game over", "Nice stack", `You scored ${score.toLocaleString()} points.`, "Play again");
+}
+
+function saveHighScore() {
+  if (score <= 0) return;
+
+  const highScores = highScoreRepository.load();
+  highScores.push({
+    score,
+    lines,
+    level,
+    playedAt: new Date().toISOString(),
+  });
+  highScores.sort((a, b) => b.score - a.score || b.lines - a.lines);
+  highScoreRepository.save(highScores.slice(0, HIGH_SCORE_LIMIT));
+  renderHighScores();
+}
+
+function renderHighScores() {
+  const highScores = highScoreRepository.load()
+    .filter((entry) => Number.isFinite(entry.score))
+    .sort((a, b) => b.score - a.score || (b.lines || 0) - (a.lines || 0))
+    .slice(0, HIGH_SCORE_LIMIT);
+
+  highScoresList.replaceChildren();
+  highScoresEmpty.hidden = highScores.length > 0;
+
+  highScores.forEach((entry, index) => {
+    const item = document.createElement("li");
+    const rank = document.createElement("span");
+    const result = document.createElement("strong");
+    const details = document.createElement("small");
+    const playedAt = new Date(entry.playedAt);
+    const dateLabel = Number.isNaN(playedAt.getTime())
+      ? ""
+      : playedAt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+    rank.textContent = `${index + 1}`;
+    result.textContent = Number(entry.score).toLocaleString();
+    details.textContent = `${entry.lines || 0} lines · Lv ${entry.level || 1}${dateLabel ? ` · ${dateLabel}` : ""}`;
+    item.append(rank, result, details);
+    highScoresList.append(item);
+  });
 }
 
 function togglePause() {
@@ -1020,7 +1087,8 @@ document.querySelectorAll("[data-step]").forEach((button) => {
   });
 });
 resetScoresButton.addEventListener("click", () => {
-  localStorage.removeItem("pinkTetrisHighScore");
+  highScoreRepository.reset();
+  renderHighScores();
   resetScoresButton.textContent = "High scores reset";
   window.setTimeout(() => {
     resetScoresButton.textContent = "Reset high scores";
@@ -1029,4 +1097,5 @@ resetScoresButton.addEventListener("click", () => {
 resetOptionsButton.addEventListener("click", resetOptions);
 
 renderOptionValues();
+renderHighScores();
 draw();
