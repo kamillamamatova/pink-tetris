@@ -91,6 +91,13 @@ button {
   padding: 18px;
 }
 
+.left-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 602px;
+}
+
 .stats-panel {
   display: grid;
   gap: 23px;
@@ -99,8 +106,6 @@ button {
 .hold-slot {
   display: grid;
   gap: 7px;
-  padding-bottom: 17px;
-  border-bottom: 1px solid var(--line);
 }
 
 #hold {
@@ -856,19 +861,27 @@ footer {
     height: 100%;
   }
 
-  .stats-panel {
+  .left-column {
     grid-column: 1 / -1;
     grid-row: 1;
-    grid-template-columns: 1.25fr repeat(3, 1fr);
+    display: grid;
+    grid-template-columns: 104px 1fr;
+    gap: 10px;
+    min-height: 0;
+  }
+
+  .hold-panel {
+    padding: 10px;
+  }
+
+  .stats-panel {
+    grid-template-columns: repeat(3, 1fr);
     gap: 0;
     padding: 10px 14px;
   }
 
   .hold-slot {
     gap: 3px;
-    padding: 0 10px 0 0;
-    border-right: 1px solid var(--line);
-    border-bottom: 0;
   }
 
   #hold {

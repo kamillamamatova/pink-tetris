@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#160d1b" />
     <title>Pink Tetris</title>
-    <link rel="stylesheet" href="styles.css?v=8" />
+    <link rel="stylesheet" href="styles.css?v=9" />
   </head>
   <body>
     <main class="game-shell">
@@ -15,30 +15,35 @@
       </header>
 
       <section class="game-layout">
-        <aside class="panel stats-panel" aria-label="Game statistics">
-          <div class="hold-slot" id="holdSlot">
-            <span class="label">Hold</span>
-            <canvas
-              id="hold"
-              width="112"
-              height="90"
-              aria-label="Held Tetris piece"
-            ></canvas>
-            <small id="holdStatus">Double-click</small>
-          </div>
-          <div class="stat">
-            <span class="label">Score</span>
-            <strong id="score">0</strong>
-          </div>
-          <div class="stat">
-            <span class="label">Level</span>
-            <strong id="level">1</strong>
-          </div>
-          <div class="stat">
-            <span class="label">Lines</span>
-            <strong id="lines">0</strong>
-          </div>
-        </aside>
+        <div class="left-column">
+          <aside class="panel hold-panel" aria-label="Held piece">
+            <div class="hold-slot" id="holdSlot">
+              <span class="label">Hold</span>
+              <canvas
+                id="hold"
+                width="112"
+                height="90"
+                aria-label="Held Tetris piece"
+              ></canvas>
+              <small id="holdStatus">Double-click</small>
+            </div>
+          </aside>
+
+          <aside class="panel stats-panel" aria-label="Game statistics">
+            <div class="stat">
+              <span class="label">Score</span>
+              <strong id="score">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Level</span>
+              <strong id="level">1</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Lines</span>
+              <strong id="lines">0</strong>
+            </div>
+          </aside>
+        </div>
 
         <div class="board-frame">
           <canvas
