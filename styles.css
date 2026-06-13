@@ -157,7 +157,7 @@ button {
   position: relative;
   width: 302px;
   height: 602px;
-  overflow: hidden;
+  overflow: visible;
   background: #100b14;
 }
 
@@ -178,6 +178,7 @@ button {
   background: rgba(12, 7, 16, 0.72);
   backdrop-filter: blur(4px);
   transition: opacity 180ms ease;
+  z-index: 5;
 }
 
 .overlay.hidden {
@@ -279,8 +280,13 @@ button {
 }
 
 .options-view {
-  margin: -24px -12px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(344px, calc(100vw - 24px));
+  margin: 0;
   padding: 15px 10px 12px;
+  transform: translate(-50%, -50%);
   border: 2px solid rgba(255, 214, 237, 0.42);
   border-radius: 18px;
   background: linear-gradient(#291d2b, #171119);
@@ -535,6 +541,13 @@ footer {
     width: min(302px, calc(100vw - 134px));
     height: auto;
     aspect-ratio: 1 / 2;
+  }
+
+  .options-view {
+    position: absolute;
+    top: 50%;
+    left: calc(50vw - 10px);
+    width: min(344px, calc(100vw - 20px));
   }
 
   #board {
