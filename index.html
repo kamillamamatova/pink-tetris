@@ -49,10 +49,49 @@
           ></canvas>
           <div class="overlay" id="overlay">
             <div class="overlay-card">
-              <p class="eyebrow" id="overlayEyebrow">Ready?</p>
-              <h1 id="overlayTitle">Pink Tetris</h1>
-              <p id="overlayText">Stack the pieces. Clear the lines.</p>
-              <button id="startButton" type="button">Start game</button>
+              <div id="overlayMessage">
+                <p class="eyebrow" id="overlayEyebrow">Ready?</p>
+                <h1 id="overlayTitle">Pink Tetris</h1>
+                <p id="overlayText">Stack the pieces. Clear the lines.</p>
+                <button id="startButton" type="button">Start game</button>
+              </div>
+
+              <div class="overlay-view hidden" id="pauseMenu">
+                <p class="eyebrow">Paused</p>
+                <h1>Pause Menu</h1>
+                <div class="menu-buttons">
+                  <button type="button" id="resumeButton">Resume</button>
+                  <button type="button" id="optionsButton">Options</button>
+                  <button type="button" id="howToPlayButton">How to play</button>
+                  <button type="button" id="quitButton">Quit</button>
+                </div>
+              </div>
+
+              <div class="overlay-view hidden" id="optionsMenu">
+                <p class="eyebrow">Pause Menu</p>
+                <h1>Options</h1>
+                <label class="option-row">
+                  <span>Ghost piece</span>
+                  <input id="ghostToggle" type="checkbox" checked />
+                </label>
+                <label class="option-row">
+                  <span>Glitter effects</span>
+                  <input id="effectsToggle" type="checkbox" checked />
+                </label>
+                <button class="menu-back" type="button" data-menu-back>Back</button>
+              </div>
+
+              <div class="overlay-view hidden" id="howToPlayMenu">
+                <p class="eyebrow">Pause Menu</p>
+                <h1>How to Play</h1>
+                <div class="how-to-list">
+                  <p>Move the mouse to aim and auto-fit.</p>
+                  <p>Click once to place a piece.</p>
+                  <p>Double-click to hold a piece.</p>
+                  <p>Use arrow keys and Space for classic controls.</p>
+                </div>
+                <button class="menu-back" type="button" data-menu-back>Back</button>
+              </div>
             </div>
           </div>
         </div>
@@ -108,6 +147,6 @@
       <footer>Move to aim · Click to place · Double-click to hold</footer>
     </main>
 
-    <script src="game.js?v=27"></script>
+    <script src="game.js?v=28"></script>
   </body>
 </html>

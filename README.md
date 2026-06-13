@@ -22,6 +22,9 @@ Then visit `http://localhost:8000`.
 - Space: hard drop
 - Escape or P: pause/resume
 
+The pause menu includes Resume, Options, How to Play, and Quit. Options can
+toggle the ghost piece and glitter effects.
+
 With a mouse, move the cursor left or right across the board to guide the falling
 piece while it descends at the normal game speed. Left-click the board to place
 the piece at that horizontal position and lock it onto the bottom or existing

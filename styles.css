@@ -216,6 +216,7 @@ button {
 }
 
 #startButton,
+.overlay-view button,
 .secondary-button,
 .game-controls button {
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -233,6 +234,57 @@ button {
   color: #24101d;
   background: var(--light-pink);
   box-shadow: 0 8px 28px rgba(255, 79, 167, 0.25);
+}
+
+.overlay-view.hidden,
+#overlayMessage.hidden {
+  display: none;
+}
+
+.menu-buttons {
+  display: grid;
+  gap: 9px;
+}
+
+.menu-buttons button,
+.menu-back {
+  width: 100%;
+  padding: 11px;
+  color: var(--light-pink);
+  border-color: rgba(255, 193, 226, 0.28);
+  background: rgba(255, 79, 167, 0.08);
+}
+
+#quitButton {
+  color: #ff8ebc;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 11px;
+  color: var(--muted);
+  font-family: system-ui, sans-serif;
+  font-size: 0.82rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.option-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--hot-pink);
+}
+
+.how-to-list {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.how-to-list p {
+  margin-bottom: 8px !important;
 }
 
 button:hover:not(:disabled) {

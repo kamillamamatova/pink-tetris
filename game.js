@@ -56,8 +56,18 @@ const overlay = document.querySelector("#overlay");
 const overlayEyebrow = document.querySelector("#overlayEyebrow");
 const overlayTitle = document.querySelector("#overlayTitle");
 const overlayText = document.querySelector("#overlayText");
+const overlayMessage = document.querySelector("#overlayMessage");
+const pauseMenu = document.querySelector("#pauseMenu");
+const optionsMenu = document.querySelector("#optionsMenu");
+const howToPlayMenu = document.querySelector("#howToPlayMenu");
 const startButton = document.querySelector("#startButton");
 const pauseButton = document.querySelector("#pauseButton");
+const resumeButton = document.querySelector("#resumeButton");
+const optionsButton = document.querySelector("#optionsButton");
+const howToPlayButton = document.querySelector("#howToPlayButton");
+const quitButton = document.querySelector("#quitButton");
+const ghostToggle = document.querySelector("#ghostToggle");
+const effectsToggle = document.querySelector("#effectsToggle");
 
 let board = createBoard();
 let currentPiece = null;
@@ -79,6 +89,8 @@ let lastTime = 0;
 let dropCounter = 0;
 let animationFrame = null;
 let placementClickTimer = null;
+let ghostEnabled = true;
+let effectsEnabled = true;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -289,6 +301,15 @@ function flashDrop(targetY = null) {
   const landingY = targetY ?? getLandingY(currentPiece);
 
   const distance = landingY - currentPiece.y;
+  if (!effectsEnabled) {
+    currentPiece.y = landingY;
+    score += distance * 2;
+    updateStats();
+    aimedLandingY = null;
+    lockPiece();
+    return;
+  }
+
   if (distance === 0) {
     lockPiece();
     return;
@@ -535,6 +556,11 @@ function getCompletedRows() {
 }
 
 function startLineClearEffect(rows) {
+  if (!effectsEnabled) {
+    clearCompletedRows(rows);
+    return;
+  }
+
   lineClearEffect = {
     rows,
     startedAt: performance.now(),
@@ -544,23 +570,25 @@ function startLineClearEffect(rows) {
 
   window.setTimeout(() => {
     if (!lineClearEffect) return;
-
-    const cleared = lineClearEffect.rows.length;
-    for (const row of [...lineClearEffect.rows].sort((a, b) => b - a)) {
-      board.splice(row, 1);
-    }
-    for (let index = 0; index < cleared; index += 1) {
-      board.unshift(Array(COLS).fill(null));
-    }
-
-    const points = [0, 100, 300, 500, 800];
-    score += points[cleared] * level;
-    lines += cleared;
-    level = Math.floor(lines / 10) + 1;
-    updateStats();
+    const rowsToClear = lineClearEffect.rows;
     lineClearEffect = null;
-    spawnNextPiece();
+    clearCompletedRows(rowsToClear);
   }, lineClearEffect.duration);
+}
+
+function clearCompletedRows(rows) {
+  const cleared = rows.length;
+  for (const row of [...rows].sort((a, b) => b - a)) board.splice(row, 1);
+  for (let index = 0; index < cleared; index += 1) {
+    board.unshift(Array(COLS).fill(null));
+  }
+
+  const points = [0, 100, 300, 500, 800];
+  score += points[cleared] * level;
+  lines += cleared;
+  level = Math.floor(lines / 10) + 1;
+  updateStats();
+  spawnNextPiece();
 }
 
 function createLineClearParticles(rows) {
@@ -594,7 +622,7 @@ function togglePause() {
 
   if (paused) {
     cancelAnimationFrame(animationFrame);
-    showOverlay("Paused", "Take a breath", "Your game is waiting for you.", "Resume");
+    showPauseMenu();
   } else {
     overlay.classList.add("hidden");
     lastTime = performance.now();
@@ -603,11 +631,48 @@ function togglePause() {
 }
 
 function showOverlay(eyebrow, title, text, buttonText) {
+  showOverlayView(overlayMessage);
   overlayEyebrow.textContent = eyebrow;
   overlayTitle.textContent = title;
   overlayText.textContent = text;
   startButton.textContent = buttonText;
   overlay.classList.remove("hidden");
+}
+
+function showOverlayView(view) {
+  [overlayMessage, pauseMenu, optionsMenu, howToPlayMenu].forEach((element) => {
+    element.classList.toggle("hidden", element !== view);
+  });
+}
+
+function showPauseMenu() {
+  showOverlayView(pauseMenu);
+  overlay.classList.remove("hidden");
+}
+
+function quitToTitle() {
+  cancelAnimationFrame(animationFrame);
+  clearTimeout(placementClickTimer);
+  running = false;
+  paused = false;
+  gameOver = false;
+  animatingDrop = false;
+  landingEffect = null;
+  lineClearEffect = null;
+  board = createBoard();
+  currentPiece = null;
+  nextPiece = null;
+  heldPieceType = null;
+  holdUsed = false;
+  score = 0;
+  lines = 0;
+  level = 1;
+  updateStats();
+  updateHoldDisplay();
+  pauseButton.disabled = true;
+  pauseButton.textContent = "Pause";
+  draw();
+  showOverlay("Ready?", "Pink Tetris", "Stack the pieces. Clear the lines.", "Start game");
 }
 
 function canControl() {
@@ -634,7 +699,7 @@ function draw() {
     boardCanvas.dataset.pieceX = currentPiece.x;
     boardCanvas.dataset.pieceY = currentPiece.y;
     boardCanvas.dataset.pieceShape = getOrientationKey(currentPiece.matrix);
-    drawPiece(currentPiece, aimedLandingY ?? getGhostY(), true);
+    if (ghostEnabled) drawPiece(currentPiece, aimedLandingY ?? getGhostY(), true);
     drawPiece(currentPiece, currentPiece.y, false);
   }
 
@@ -880,5 +945,19 @@ startButton.addEventListener("click", () => {
   }
 });
 pauseButton.addEventListener("click", togglePause);
+resumeButton.addEventListener("click", togglePause);
+optionsButton.addEventListener("click", () => showOverlayView(optionsMenu));
+howToPlayButton.addEventListener("click", () => showOverlayView(howToPlayMenu));
+quitButton.addEventListener("click", quitToTitle);
+document.querySelectorAll("[data-menu-back]").forEach((button) => {
+  button.addEventListener("click", showPauseMenu);
+});
+ghostToggle.addEventListener("change", () => {
+  ghostEnabled = ghostToggle.checked;
+  draw();
+});
+effectsToggle.addEventListener("change", () => {
+  effectsEnabled = effectsToggle.checked;
+});
 
 draw();
