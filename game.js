@@ -839,7 +839,7 @@ document.addEventListener("keydown", (event) => {
     " ": "drop",
   };
 
-  if (event.key.toLowerCase() === "p") {
+  if (event.key === "Escape" || event.key.toLowerCase() === "p") {
     event.preventDefault();
     togglePause();
     return;

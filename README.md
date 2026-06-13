@@ -20,7 +20,7 @@ Then visit `http://localhost:8000`.
 - Up arrow: rotate
 - Down arrow: soft drop
 - Space: hard drop
-- P: pause
+- Escape or P: pause/resume
 
 With a mouse, move the cursor left or right across the board to guide the falling
 piece while it descends at the normal game speed. Left-click the board to place
