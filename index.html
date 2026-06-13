@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#160d1b" />
     <title>Pink Tetris</title>
-    <link rel="stylesheet" href="styles.css?v=6" />
+    <link rel="stylesheet" href="styles.css?v=7" />
   </head>
   <body>
     <main class="game-shell">
@@ -138,16 +138,42 @@
                 <button class="options-done" type="button" data-menu-back>Done</button>
               </div>
 
-              <div class="overlay-view hidden" id="howToPlayMenu">
-                <p class="eyebrow">Pause Menu</p>
-                <h1>How to Play</h1>
-                <div class="how-to-list">
-                  <p>Move the mouse to aim and auto-fit.</p>
-                  <p>Click once to place a piece.</p>
-                  <p>Double-click to hold a piece.</p>
-                  <p>Use arrow keys and Space for classic controls.</p>
+              <div class="overlay-view tutorial-view hidden" id="howToPlayMenu">
+                <h1>− How to Play −</h1>
+                <div class="tutorial-cards">
+                  <article class="tutorial-card">
+                    <header><span class="tutorial-number">1</span><h2>Move</h2></header>
+                    <p>Slide the mouse left or right to guide the falling piece.</p>
+                    <div class="tutorial-board" aria-hidden="true">
+                      <span class="arrow left-arrow">←</span>
+                      <div class="mini-piece t-piece"><i></i><i></i><i></i><i></i></div>
+                      <span class="arrow right-arrow">→</span>
+                    </div>
+                    <div class="mouse-diagram" aria-hidden="true">
+                      <span>‹</span><div class="mouse-shape"></div><span>›</span>
+                    </div>
+                  </article>
+                  <article class="tutorial-card">
+                    <header><span class="tutorial-number">2</span><h2>Rotate</h2></header>
+                    <p>The piece and ghost rotate automatically based on the cursor position.</p>
+                    <div class="tutorial-board" aria-hidden="true">
+                      <div class="mini-stack"></div><div class="ghost-piece"></div>
+                      <span class="cursor-icon">➤</span>
+                    </div>
+                    <p class="tutorial-tip"><strong>Tip:</strong> Use the ghost piece to preview the best fit before placing.</p>
+                  </article>
+                  <article class="tutorial-card">
+                    <header><span class="tutorial-number">3</span><h2>Drop</h2></header>
+                    <p>Click the left mouse button to place the piece instantly.</p>
+                    <div class="tutorial-board" aria-hidden="true">
+                      <div class="mini-stack"></div><div class="drop-trail"></div>
+                    </div>
+                    <div class="mouse-diagram" aria-hidden="true">
+                      <div class="mouse-shape split"><span>Place</span><span>Hold</span></div>
+                    </div>
+                  </article>
                 </div>
-                <button class="menu-back" type="button" data-menu-back>Back</button>
+                <button class="tutorial-done" type="button" data-menu-back>Done</button>
               </div>
             </div>
           </div>

@@ -155,6 +155,7 @@ button {
 
 .board-frame {
   position: relative;
+  z-index: 2;
   width: 302px;
   height: 602px;
   overflow: visible;
@@ -398,13 +399,219 @@ button {
   box-shadow: 0 4px 0 #74445f;
 }
 
-.how-to-list {
-  margin-bottom: 16px;
-  text-align: left;
+.tutorial-view {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(664px, calc(100vw - 28px));
+  padding: 17px;
+  transform: translate(-50%, -50%);
+  border: 3px solid rgba(255, 226, 242, 0.75);
+  border-radius: 20px;
+  background: linear-gradient(#2b202c, #151016);
+  box-shadow:
+    inset 0 0 0 5px rgba(255, 255, 255, 0.05),
+    0 0 34px rgba(255, 79, 167, 0.22);
 }
 
-.how-to-list p {
-  margin-bottom: 8px !important;
+.tutorial-view h1 {
+  margin-bottom: 16px;
+  font-size: 2rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.tutorial-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.tutorial-card {
+  display: grid;
+  grid-template-rows: auto 72px 130px 1fr;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  border: 2px solid rgba(255, 239, 248, 0.78);
+  border-radius: 12px;
+  background: #1b161c;
+}
+
+.tutorial-card header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+}
+
+.tutorial-card h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+.tutorial-number {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: #28121e;
+  font-size: 1.4rem;
+  font-weight: 900;
+  border: 2px solid white;
+  border-radius: 7px;
+  background: var(--light-pink);
+  box-shadow: 0 0 8px rgba(255, 79, 167, 0.6);
+}
+
+.tutorial-card > p {
+  margin: 0 !important;
+  padding: 5px 9px 10px;
+  color: #e7cbd9 !important;
+  font-size: 0.66rem !important;
+  line-height: 1.35 !important;
+}
+
+.tutorial-board {
+  position: relative;
+  overflow: hidden;
+  border-block: 1px solid var(--line);
+  background-color: #0f0c11;
+  background-image:
+    linear-gradient(rgba(255, 193, 226, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 193, 226, 0.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.mini-piece {
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(3, 20px);
+  grid-template-rows: repeat(2, 20px);
+}
+
+.mini-piece i {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, #ffc5e3, #c33d8f);
+  box-shadow: inset 2px 2px rgba(255, 255, 255, 0.25);
+}
+
+.t-piece {
+  top: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.t-piece i:first-child {
+  grid-column: 2;
+}
+
+.arrow {
+  position: absolute;
+  top: 56px;
+  color: white;
+  font-size: 1.8rem;
+}
+
+.left-arrow { left: 8px; }
+.right-arrow { right: 8px; }
+
+.mouse-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  min-height: 84px;
+}
+
+.mouse-diagram > span {
+  color: var(--light-pink);
+  font-size: 2.5rem;
+}
+
+.mouse-shape {
+  width: 60px;
+  height: 75px;
+  border: 3px solid white;
+  border-radius: 28px 28px 8px 8px;
+  background:
+    linear-gradient(90deg, transparent 49%, white 49%, white 52%, transparent 52%),
+    linear-gradient(transparent 46%, white 46%, white 49%, transparent 49%);
+}
+
+.mini-stack {
+  position: absolute;
+  right: 8px;
+  bottom: 0;
+  width: 72%;
+  height: 70px;
+  background:
+    linear-gradient(90deg, #db4b9a 0 24%, transparent 24% 27%, #f09bc9 27% 52%, transparent 52% 55%, #ae327f 55% 80%, transparent 80%),
+    repeating-linear-gradient(0deg, transparent 0 20px, rgba(255,255,255,.16) 20px 22px);
+  clip-path: polygon(0 70%, 18% 70%, 18% 40%, 40% 40%, 40% 62%, 63% 62%, 63% 25%, 82% 25%, 82% 50%, 100% 50%, 100% 100%, 0 100%);
+}
+
+.ghost-piece {
+  position: absolute;
+  left: 34px;
+  bottom: 22px;
+  width: 42px;
+  height: 42px;
+  border: 2px solid rgba(255, 130, 195, 0.65);
+}
+
+.cursor-icon {
+  position: absolute;
+  left: 84px;
+  bottom: 12px;
+  color: white;
+  font-size: 2rem;
+  transform: rotate(-45deg);
+}
+
+.tutorial-tip {
+  align-self: center;
+}
+
+.tutorial-tip strong {
+  color: var(--hot-pink);
+  text-transform: uppercase;
+}
+
+.drop-trail {
+  position: absolute;
+  left: 48%;
+  top: 13px;
+  width: 23px;
+  height: 75px;
+  background: linear-gradient(transparent, rgba(255, 79, 167, 0.8));
+}
+
+.mouse-shape.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 92px;
+  color: #28121e;
+  font-size: 0.55rem;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(90deg, white 50%, #e65ca4 50%);
+}
+
+.mouse-shape.split span {
+  padding-top: 18px;
+}
+
+.tutorial-done {
+  width: 150px;
+  margin-top: 14px;
+  padding: 10px;
+  color: #281822;
+  font-size: 1rem;
+  border-radius: 14px;
+  background: linear-gradient(#fff3fa, #e795bf);
+  box-shadow: 0 4px 0 #74445f;
 }
 
 button:hover:not(:disabled) {
@@ -548,6 +755,22 @@ footer {
     top: 50%;
     left: calc(50vw - 10px);
     width: min(344px, calc(100vw - 20px));
+  }
+
+  .tutorial-view {
+    top: 50%;
+    left: calc(50vw - 10px);
+    width: min(344px, calc(100vw - 20px));
+    max-height: 580px;
+    overflow-y: auto;
+  }
+
+  .tutorial-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .tutorial-card {
+    grid-template-rows: auto 60px 105px auto;
   }
 
   #board {
