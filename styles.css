@@ -96,6 +96,37 @@ button {
   gap: 23px;
 }
 
+.hold-slot {
+  display: grid;
+  gap: 7px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid var(--line);
+}
+
+#hold {
+  display: block;
+  width: 112px;
+  height: 90px;
+  border: 1px solid var(--line);
+  background: #100b14;
+  transition: opacity 120ms ease;
+}
+
+.hold-slot small {
+  color: #745f70;
+  font-family: system-ui, sans-serif;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+}
+
+.hold-slot.used #hold {
+  opacity: 0.42;
+}
+
+.hold-slot.used small {
+  color: var(--hot-pink);
+}
+
 .stat {
   display: grid;
   gap: 5px;
@@ -348,9 +379,25 @@ footer {
   .stats-panel {
     grid-column: 1 / -1;
     grid-row: 1;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1.25fr repeat(3, 1fr);
     gap: 0;
     padding: 10px 14px;
+  }
+
+  .hold-slot {
+    gap: 3px;
+    padding: 0 10px 0 0;
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  #hold {
+    width: 68px;
+    height: 46px;
+  }
+
+  .hold-slot small {
+    display: none;
   }
 
   .stat {

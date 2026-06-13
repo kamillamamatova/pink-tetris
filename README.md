@@ -29,4 +29,6 @@ stack. As the cursor moves, the piece automatically tests its orientations and
 turns toward the closest valid fit against the floor or existing blocks.
 The placement preview can also target empty cavities beneath overhangs when the
 piece fits.
+Double-click the board to hold the active piece. Hold can only be used once per
+active piece, and becomes available again after that piece locks.
 Touchscreen controls appear below the board on smaller screens.

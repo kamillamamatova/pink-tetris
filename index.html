@@ -16,6 +16,16 @@
 
       <section class="game-layout">
         <aside class="panel stats-panel" aria-label="Game statistics">
+          <div class="hold-slot" id="holdSlot">
+            <span class="label">Hold</span>
+            <canvas
+              id="hold"
+              width="112"
+              height="90"
+              aria-label="Held Tetris piece"
+            ></canvas>
+            <small id="holdStatus">Double-click</small>
+          </div>
           <div class="stat">
             <span class="label">Score</span>
             <strong id="score">0</strong>
@@ -95,9 +105,9 @@
         </button>
       </section>
 
-      <footer>Move to aim and auto-fit · Left-click to place</footer>
+      <footer>Move to aim · Click to place · Double-click to hold</footer>
     </main>
 
-    <script src="game.js?v=25"></script>
+    <script src="game.js?v=26"></script>
   </body>
 </html>

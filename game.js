@@ -45,6 +45,10 @@ const boardFrame = document.querySelector(".board-frame");
 const boardContext = boardCanvas.getContext("2d");
 const nextCanvas = document.querySelector("#next");
 const nextContext = nextCanvas.getContext("2d");
+const holdCanvas = document.querySelector("#hold");
+const holdContext = holdCanvas.getContext("2d");
+const holdSlot = document.querySelector("#holdSlot");
+const holdStatus = document.querySelector("#holdStatus");
 const scoreElement = document.querySelector("#score");
 const linesElement = document.querySelector("#lines");
 const levelElement = document.querySelector("#level");
@@ -58,6 +62,8 @@ const pauseButton = document.querySelector("#pauseButton");
 let board = createBoard();
 let currentPiece = null;
 let nextPiece = null;
+let heldPieceType = null;
+let holdUsed = false;
 let bag = [];
 let score = 0;
 let lines = 0;
@@ -72,6 +78,7 @@ let aimedLandingY = null;
 let lastTime = 0;
 let dropCounter = 0;
 let animationFrame = null;
+let placementClickTimer = null;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -85,9 +92,7 @@ function refillBag() {
   }
 }
 
-function takeFromBag() {
-  if (bag.length === 0) refillBag();
-  const type = bag.pop();
+function createPiece(type) {
   const matrix = SHAPES[type].map((row) => [...row]);
   return {
     type,
@@ -95,6 +100,11 @@ function takeFromBag() {
     x: Math.floor((COLS - matrix[0].length) / 2),
     y: type === "I" ? -1 : 0,
   };
+}
+
+function takeFromBag() {
+  if (bag.length === 0) refillBag();
+  return createPiece(bag.pop());
 }
 
 function resetGame() {
@@ -109,6 +119,11 @@ function resetGame() {
   landingEffect = null;
   lineClearEffect = null;
   aimedLandingY = null;
+  heldPieceType = null;
+  holdUsed = false;
+  clearTimeout(placementClickTimer);
+  placementClickTimer = null;
+  updateHoldDisplay();
   currentPiece = takeFromBag();
   nextPiece = takeFromBag();
   dropCounter = 0;
@@ -212,6 +227,30 @@ function placePieceAtPointer(event) {
     aimedLandingY = bestFit.landingY;
   }
   flashDrop(aimedLandingY);
+}
+
+function holdCurrentPiece() {
+  if (!canControl() || holdUsed) return;
+
+  const outgoingType = currentPiece.type;
+  if (heldPieceType) {
+    currentPiece = createPiece(heldPieceType);
+  } else {
+    currentPiece = nextPiece;
+    nextPiece = takeFromBag();
+  }
+
+  heldPieceType = outgoingType;
+  holdUsed = true;
+  aimedLandingY = null;
+  dropCounter = 0;
+  updateHoldDisplay();
+
+  if (collide(currentPiece)) {
+    endGame();
+    return;
+  }
+  draw();
 }
 
 function moveDown(manual = true) {
@@ -474,6 +513,8 @@ function lockPiece() {
 function spawnNextPiece() {
   currentPiece = nextPiece;
   nextPiece = takeFromBag();
+  holdUsed = false;
+  updateHoldDisplay();
   aimedLandingY = null;
   dropCounter = 0;
 
@@ -600,6 +641,7 @@ function draw() {
   if (landingEffect) drawLandingEffect();
   if (lineClearEffect) drawLineClearEffect();
   drawNext();
+  drawHold();
 }
 
 function drawLandingEffect() {
@@ -741,6 +783,36 @@ function drawNext() {
   nextContext.restore();
 }
 
+function drawPreview(context, canvas, pieceType) {
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  if (!pieceType) return;
+
+  const matrix = SHAPES[pieceType];
+  const previewBlock = 20;
+  const width = matrix[0].length * previewBlock;
+  const height = matrix.length * previewBlock;
+  const offsetX = (canvas.width - width) / 2;
+  const offsetY = (canvas.height - height) / 2;
+
+  context.save();
+  context.translate(offsetX, offsetY);
+  for (let y = 0; y < matrix.length; y += 1) {
+    for (let x = 0; x < matrix[y].length; x += 1) {
+      if (matrix[y][x]) drawBlock(context, x, y, COLORS[pieceType], previewBlock);
+    }
+  }
+  context.restore();
+}
+
+function drawHold() {
+  drawPreview(holdContext, holdCanvas, heldPieceType);
+}
+
+function updateHoldDisplay() {
+  holdSlot.classList.toggle("used", holdUsed);
+  holdStatus.textContent = holdUsed ? "Used this turn" : "Double-click";
+}
+
 function updateStats() {
   scoreElement.textContent = score.toLocaleString();
   linesElement.textContent = lines;
@@ -789,7 +861,15 @@ document.querySelectorAll("[data-action]").forEach((button) => {
 
 document.addEventListener("pointermove", guidePieceToPointer);
 document.addEventListener("mousemove", guidePieceToPointer);
-boardCanvas.addEventListener("click", placePieceAtPointer);
+boardCanvas.addEventListener("click", (event) => {
+  clearTimeout(placementClickTimer);
+  placementClickTimer = window.setTimeout(() => placePieceAtPointer(event), 220);
+});
+boardCanvas.addEventListener("dblclick", (event) => {
+  event.preventDefault();
+  clearTimeout(placementClickTimer);
+  holdCurrentPiece();
+});
 boardCanvas.addEventListener("contextmenu", (event) => event.preventDefault());
 
 startButton.addEventListener("click", () => {
