@@ -469,7 +469,7 @@ function startLineClearEffect(rows) {
   lineClearEffect = {
     rows,
     startedAt: performance.now(),
-    duration: 460,
+    duration: 145,
     particles: createLineClearParticles(rows),
   };
 
