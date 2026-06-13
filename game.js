@@ -68,6 +68,7 @@ let gameOver = false;
 let animatingDrop = false;
 let landingEffect = null;
 let lineClearEffect = null;
+let aimedLandingY = null;
 let lastTime = 0;
 let dropCounter = 0;
 let animationFrame = null;
@@ -107,6 +108,7 @@ function resetGame() {
   animatingDrop = false;
   landingEffect = null;
   lineClearEffect = null;
+  aimedLandingY = null;
   currentPiece = takeFromBag();
   nextPiece = takeFromBag();
   dropCounter = 0;
@@ -169,6 +171,7 @@ function collide(piece, offsetX = 0, offsetY = 0, matrix = piece.matrix) {
 function moveHorizontal(direction) {
   if (!canControl() || collide(currentPiece, direction, 0)) return;
   currentPiece.x += direction;
+  aimedLandingY = null;
   draw();
 }
 
@@ -195,6 +198,7 @@ function guidePieceToPointer(event) {
 
   currentPiece.matrix = bestFit.matrix;
   currentPiece.x = bestFit.x;
+  aimedLandingY = bestFit.landingY;
   draw();
 }
 
@@ -205,8 +209,9 @@ function placePieceAtPointer(event) {
   if (bestFit) {
     currentPiece.matrix = bestFit.matrix;
     currentPiece.x = bestFit.x;
+    aimedLandingY = bestFit.landingY;
   }
-  flashDrop();
+  flashDrop(aimedLandingY);
 }
 
 function moveDown(manual = true) {
@@ -214,6 +219,7 @@ function moveDown(manual = true) {
 
   if (!collide(currentPiece, 0, 1)) {
     currentPiece.y += 1;
+    aimedLandingY = null;
     if (manual) score += 1;
     dropCounter = 0;
     updateStats();
@@ -227,6 +233,7 @@ function moveDown(manual = true) {
 function hardDrop() {
   if (!canControl()) return;
 
+  aimedLandingY = null;
   let distance = 0;
   while (!collide(currentPiece, 0, 1)) {
     currentPiece.y += 1;
@@ -237,13 +244,10 @@ function hardDrop() {
   lockPiece();
 }
 
-function flashDrop() {
+function flashDrop(targetY = null) {
   if (!canControl()) return;
 
-  let landingY = currentPiece.y;
-  while (!collide(currentPiece, 0, landingY - currentPiece.y + 1)) {
-    landingY += 1;
-  }
+  const landingY = targetY ?? getLandingY(currentPiece);
 
   const distance = landingY - currentPiece.y;
   if (distance === 0) {
@@ -271,6 +275,7 @@ function flashDrop() {
     updateStats();
     landingEffect = null;
     animatingDrop = false;
+    aimedLandingY = null;
     dropCounter = 0;
     lockPiece();
   }, landingEffect.duration);
@@ -310,6 +315,26 @@ function getLandingY(piece, matrix = piece.matrix, x = piece.x) {
   const probe = { ...piece, x, matrix };
   while (!collide(probe, 0, landingY - piece.y + 1, matrix)) landingY += 1;
   return landingY;
+}
+
+function canPlaceAt(matrix, x, y) {
+  for (let matrixY = 0; matrixY < matrix.length; matrixY += 1) {
+    for (let matrixX = 0; matrixX < matrix[matrixY].length; matrixX += 1) {
+      if (!matrix[matrixY][matrixX]) continue;
+      const boardX = x + matrixX;
+      const boardY = y + matrixY;
+      if (boardX < 0 || boardX >= COLS || boardY >= ROWS) return false;
+      if (boardY >= 0 && board[boardY][boardX]) return false;
+    }
+  }
+  return true;
+}
+
+function getDeepestFitY(matrix, x) {
+  for (let y = ROWS - matrix.length; y >= currentPiece.y; y -= 1) {
+    if (canPlaceAt(matrix, x, y)) return y;
+  }
+  return null;
 }
 
 function getOrientationKey(matrix) {
@@ -364,7 +389,8 @@ function getBestPointerFit(event) {
         if (x < 0 || x + orientation.matrix[0].length > COLS) continue;
         if (collide(currentPiece, x - currentPiece.x, 0, orientation.matrix)) continue;
 
-        const landingY = getLandingY(currentPiece, orientation.matrix, x);
+        const landingY = getDeepestFitY(orientation.matrix, x);
+        if (landingY === null) continue;
         candidates.push({
           matrix: orientation.matrix,
           turns: orientation.turns,
@@ -416,6 +442,7 @@ function rotatePiece(pointerEvent = null) {
 
   currentPiece.matrix = rotated;
   currentPiece.x = candidates[0].x;
+  aimedLandingY = null;
   draw();
 }
 
@@ -447,6 +474,7 @@ function lockPiece() {
 function spawnNextPiece() {
   currentPiece = nextPiece;
   nextPiece = takeFromBag();
+  aimedLandingY = null;
   dropCounter = 0;
 
   if (collide(currentPiece)) {
@@ -565,7 +593,7 @@ function draw() {
     boardCanvas.dataset.pieceX = currentPiece.x;
     boardCanvas.dataset.pieceY = currentPiece.y;
     boardCanvas.dataset.pieceShape = getOrientationKey(currentPiece.matrix);
-    drawPiece(currentPiece, getGhostY(), true);
+    drawPiece(currentPiece, aimedLandingY ?? getGhostY(), true);
     drawPiece(currentPiece, currentPiece.y, false);
   }
 

@@ -27,4 +27,6 @@ piece while it descends at the normal game speed. Left-click the board to place
 the piece at that horizontal position and lock it onto the bottom or existing
 stack. As the cursor moves, the piece automatically tests its orientations and
 turns toward the closest valid fit against the floor or existing blocks.
+The placement preview can also target empty cavities beneath overhangs when the
+piece fits.
 Touchscreen controls appear below the board on smaller screens.
