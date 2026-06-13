@@ -134,7 +134,7 @@ button {
   display: block;
   width: 300px;
   height: 600px;
-  cursor: crosshair;
+  cursor: default;
   touch-action: none;
 }
 
