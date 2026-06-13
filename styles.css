@@ -278,6 +278,120 @@ button {
   accent-color: var(--hot-pink);
 }
 
+.options-view {
+  margin: -24px -12px;
+  padding: 15px 10px 12px;
+  border: 2px solid rgba(255, 214, 237, 0.42);
+  border-radius: 18px;
+  background: linear-gradient(#291d2b, #171119);
+  box-shadow:
+    inset 0 0 0 4px rgba(255, 255, 255, 0.05),
+    0 0 26px rgba(255, 79, 167, 0.18);
+}
+
+.options-view h1 {
+  margin-bottom: 15px;
+  font-size: 2.2rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.options-scroll {
+  max-height: 445px;
+  padding: 0 7px;
+  overflow-y: auto;
+  scrollbar-color: var(--hot-pink) transparent;
+  scrollbar-width: thin;
+}
+
+.option-check,
+.binding-list > div,
+.option-stepper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  color: #f8dcea;
+  font-family: system-ui, sans-serif;
+  font-size: 0.69rem;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.option-check input {
+  justify-self: center;
+  width: 22px;
+  height: 22px;
+  accent-color: var(--hot-pink);
+}
+
+.binding-list {
+  margin: 8px 0 14px;
+}
+
+.binding-list kbd {
+  width: 112px;
+  padding: 5px 7px;
+  overflow: hidden;
+  color: var(--light-pink);
+  font-family: system-ui, sans-serif;
+  font-size: 0.62rem;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: 999px;
+  background: #181219;
+}
+
+.stepper-list {
+  margin: 10px 0;
+}
+
+.option-stepper {
+  grid-template-columns: minmax(0, 1fr) 34px 64px 34px;
+}
+
+.option-stepper button {
+  min-height: 27px;
+  padding: 2px;
+  border-radius: 999px;
+  background: #181219;
+}
+
+.option-stepper output {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.options-reset-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.options-reset-row button {
+  min-height: 42px;
+  padding: 6px;
+  color: var(--light-pink);
+  font-size: 0.58rem;
+  border-radius: 10px;
+  background: #181219;
+}
+
+.options-done {
+  width: 78%;
+  margin-top: 10px;
+  padding: 11px;
+  color: #281822;
+  font-size: 1rem;
+  border-radius: 14px;
+  background: linear-gradient(#fff3fa, #e795bf);
+  box-shadow: 0 4px 0 #74445f;
+}
+
 .how-to-list {
   margin-bottom: 16px;
   text-align: left;

@@ -67,18 +67,75 @@
                 </div>
               </div>
 
-              <div class="overlay-view hidden" id="optionsMenu">
-                <p class="eyebrow">Pause Menu</p>
+              <div class="overlay-view options-view hidden" id="optionsMenu">
                 <h1>Options</h1>
-                <label class="option-row">
-                  <span>Ghost piece</span>
-                  <input id="ghostToggle" type="checkbox" checked />
-                </label>
-                <label class="option-row">
-                  <span>Glitter effects</span>
-                  <input id="effectsToggle" type="checkbox" checked />
-                </label>
-                <button class="menu-back" type="button" data-menu-back>Back</button>
+                <div class="options-scroll">
+                  <label class="option-check">
+                    <span>Enable mouse control</span>
+                    <input id="mouseToggle" type="checkbox" checked />
+                  </label>
+
+                  <div class="binding-list">
+                    <div><span>Move right</span><kbd>Right arrow</kbd></div>
+                    <div><span>Move left</span><kbd>Left arrow</kbd></div>
+                    <div><span>Rotate right</span><kbd>Up arrow</kbd></div>
+                    <div><span>Rotate left</span><kbd>Z</kbd></div>
+                    <div><span>Soft drop</span><kbd>Down arrow</kbd></div>
+                    <div><span>Hard drop</span><kbd>Space</kbd></div>
+                    <div><span>Hold</span><kbd>C / Double-click</kbd></div>
+                  </div>
+
+                  <div class="stepper-list">
+                    <div class="option-stepper">
+                      <span>Auto-repeat delay</span>
+                      <button type="button" data-step="repeatDelay" data-delta="-10">−</button>
+                      <output id="repeatDelayValue">170 ms</output>
+                      <button type="button" data-step="repeatDelay" data-delta="10">+</button>
+                    </div>
+                    <div class="option-stepper">
+                      <span>Auto-repeat speed</span>
+                      <button type="button" data-step="repeatSpeed" data-delta="-5">−</button>
+                      <output id="repeatSpeedValue">50 ms</output>
+                      <button type="button" data-step="repeatSpeed" data-delta="5">+</button>
+                    </div>
+                  </div>
+
+                  <label class="option-check">
+                    <span>Show animations</span>
+                    <input id="effectsToggle" type="checkbox" checked />
+                  </label>
+                  <label class="option-check">
+                    <span>Show ghost piece</span>
+                    <input id="ghostToggle" type="checkbox" checked />
+                  </label>
+
+                  <div class="stepper-list">
+                    <div class="option-stepper">
+                      <span>Sound FX volume</span>
+                      <button type="button" data-step="soundVolume" data-delta="-10">−</button>
+                      <output id="soundVolumeValue">10%</output>
+                      <button type="button" data-step="soundVolume" data-delta="10">+</button>
+                    </div>
+                    <div class="option-stepper">
+                      <span>Music volume</span>
+                      <button type="button" data-step="musicVolume" data-delta="-10">−</button>
+                      <output id="musicVolumeValue">0%</output>
+                      <button type="button" data-step="musicVolume" data-delta="10">+</button>
+                    </div>
+                    <div class="option-stepper">
+                      <span>Music type</span>
+                      <button type="button" data-step="musicType" data-delta="-1">−</button>
+                      <output id="musicTypeValue">Type 1</output>
+                      <button type="button" data-step="musicType" data-delta="1">+</button>
+                    </div>
+                  </div>
+
+                  <div class="options-reset-row">
+                    <button type="button" id="resetScoresButton">Reset high scores</button>
+                    <button type="button" id="resetOptionsButton">Reset options</button>
+                  </div>
+                </div>
+                <button class="options-done" type="button" data-menu-back>Done</button>
               </div>
 
               <div class="overlay-view hidden" id="howToPlayMenu">
@@ -147,6 +204,6 @@
       <footer>Move to aim · Click to place · Double-click to hold</footer>
     </main>
 
-    <script src="game.js?v=28"></script>
+    <script src="game.js?v=29"></script>
   </body>
 </html>

@@ -66,8 +66,11 @@ const resumeButton = document.querySelector("#resumeButton");
 const optionsButton = document.querySelector("#optionsButton");
 const howToPlayButton = document.querySelector("#howToPlayButton");
 const quitButton = document.querySelector("#quitButton");
+const mouseToggle = document.querySelector("#mouseToggle");
 const ghostToggle = document.querySelector("#ghostToggle");
 const effectsToggle = document.querySelector("#effectsToggle");
+const resetScoresButton = document.querySelector("#resetScoresButton");
+const resetOptionsButton = document.querySelector("#resetOptionsButton");
 
 let board = createBoard();
 let currentPiece = null;
@@ -89,8 +92,16 @@ let lastTime = 0;
 let dropCounter = 0;
 let animationFrame = null;
 let placementClickTimer = null;
+let mouseEnabled = true;
 let ghostEnabled = true;
 let effectsEnabled = true;
+const optionValues = {
+  repeatDelay: 170,
+  repeatSpeed: 50,
+  soundVolume: 10,
+  musicVolume: 0,
+  musicType: 1,
+};
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -218,7 +229,7 @@ function getPointerColumn(event, matrix = currentPiece.matrix) {
 }
 
 function guidePieceToPointer(event) {
-  if (!canControl() || event.pointerType === "touch") return;
+  if (!mouseEnabled || !canControl() || event.pointerType === "touch") return;
 
   const bestFit = getBestPointerFit(event);
   if (!bestFit) return;
@@ -230,7 +241,7 @@ function guidePieceToPointer(event) {
 }
 
 function placePieceAtPointer(event) {
-  if (!canControl()) return;
+  if (!mouseEnabled || !canControl()) return;
 
   const bestFit = getBestPointerFit(event);
   if (bestFit) {
@@ -650,6 +661,32 @@ function showPauseMenu() {
   overlay.classList.remove("hidden");
 }
 
+function renderOptionValues() {
+  document.querySelector("#repeatDelayValue").textContent = `${optionValues.repeatDelay} ms`;
+  document.querySelector("#repeatSpeedValue").textContent = `${optionValues.repeatSpeed} ms`;
+  document.querySelector("#soundVolumeValue").textContent = `${optionValues.soundVolume}%`;
+  document.querySelector("#musicVolumeValue").textContent = `${optionValues.musicVolume}%`;
+  document.querySelector("#musicTypeValue").textContent = `Type ${optionValues.musicType}`;
+}
+
+function resetOptions() {
+  mouseEnabled = true;
+  ghostEnabled = true;
+  effectsEnabled = true;
+  Object.assign(optionValues, {
+    repeatDelay: 170,
+    repeatSpeed: 50,
+    soundVolume: 10,
+    musicVolume: 0,
+    musicType: 1,
+  });
+  mouseToggle.checked = true;
+  ghostToggle.checked = true;
+  effectsToggle.checked = true;
+  renderOptionValues();
+  draw();
+}
+
 function quitToTitle() {
   cancelAnimationFrame(animationFrame);
   clearTimeout(placementClickTimer);
@@ -927,10 +964,12 @@ document.querySelectorAll("[data-action]").forEach((button) => {
 document.addEventListener("pointermove", guidePieceToPointer);
 document.addEventListener("mousemove", guidePieceToPointer);
 boardCanvas.addEventListener("click", (event) => {
+  if (!mouseEnabled) return;
   clearTimeout(placementClickTimer);
   placementClickTimer = window.setTimeout(() => placePieceAtPointer(event), 220);
 });
 boardCanvas.addEventListener("dblclick", (event) => {
+  if (!mouseEnabled) return;
   event.preventDefault();
   clearTimeout(placementClickTimer);
   holdCurrentPiece();
@@ -959,5 +998,35 @@ ghostToggle.addEventListener("change", () => {
 effectsToggle.addEventListener("change", () => {
   effectsEnabled = effectsToggle.checked;
 });
+mouseToggle.addEventListener("change", () => {
+  mouseEnabled = mouseToggle.checked;
+});
+document.querySelectorAll("[data-step]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const key = button.dataset.step;
+    const delta = Number(button.dataset.delta);
+    const limits = {
+      repeatDelay: [50, 500],
+      repeatSpeed: [15, 150],
+      soundVolume: [0, 100],
+      musicVolume: [0, 100],
+      musicType: [1, 3],
+    };
+    optionValues[key] = Math.max(
+      limits[key][0],
+      Math.min(limits[key][1], optionValues[key] + delta),
+    );
+    renderOptionValues();
+  });
+});
+resetScoresButton.addEventListener("click", () => {
+  localStorage.removeItem("pinkTetrisHighScore");
+  resetScoresButton.textContent = "High scores reset";
+  window.setTimeout(() => {
+    resetScoresButton.textContent = "Reset high scores";
+  }, 900);
+});
+resetOptionsButton.addEventListener("click", resetOptions);
 
+renderOptionValues();
 draw();
