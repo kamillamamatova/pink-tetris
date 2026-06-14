@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#160d1b" />
     <title>Pink Tetris</title>
-    <link rel="stylesheet" href="styles.css?v=10" />
+    <link rel="stylesheet" href="styles.css?v=11" />
   </head>
   <body>
     <main class="game-shell">
@@ -194,8 +194,8 @@
           </div>
         </div>
 
-        <aside class="panel next-panel" aria-label="Next piece and controls">
-          <div>
+        <div class="right-column">
+          <aside class="panel next-panel" aria-label="Next piece">
             <span class="label">Next</span>
             <canvas
               id="next"
@@ -203,19 +203,22 @@
               height="110"
               aria-label="Next Tetris piece"
             ></canvas>
-          </div>
-          <div class="controls-list">
-            <span class="label">Controls</span>
-            <p><kbd>←</kbd><kbd>→</kbd> Move</p>
-            <p><kbd>↑</kbd> Rotate</p>
-            <p><kbd>↓</kbd> Soft drop</p>
-            <p><kbd>Space</kbd> Hard drop</p>
-            <p><kbd>Esc</kbd> Pause</p>
-          </div>
-          <button class="secondary-button" id="pauseButton" type="button" disabled>
-            Pause
-          </button>
-        </aside>
+          </aside>
+
+          <aside class="panel controls-panel" aria-label="Game controls">
+            <div class="controls-list">
+              <span class="label">Controls</span>
+              <p><kbd>←</kbd><kbd>→</kbd> Move</p>
+              <p><kbd>↑</kbd> Rotate</p>
+              <p><kbd>↓</kbd> Soft drop</p>
+              <p><kbd>Space</kbd> Hard drop</p>
+              <p><kbd>Esc</kbd> Pause</p>
+            </div>
+            <button class="secondary-button" id="pauseButton" type="button" disabled>
+              Pause
+            </button>
+          </aside>
+        </div>
       </section>
 
       <section class="game-controls" aria-label="Mouse and touch controls">

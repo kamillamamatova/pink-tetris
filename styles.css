@@ -98,6 +98,13 @@ button {
   min-height: 602px;
 }
 
+.right-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 602px;
+}
+
 .stats-panel {
   display: grid;
   gap: 23px;
@@ -726,6 +733,11 @@ button:focus-visible {
 
 .next-panel {
   display: grid;
+  gap: 11px;
+}
+
+.controls-panel {
+  display: grid;
   gap: 20px;
 }
 
@@ -929,6 +941,14 @@ footer {
   .next-panel {
     gap: 14px;
     padding: 10px;
+  }
+
+  .right-column {
+    min-height: 0;
+  }
+
+  .controls-panel {
+    display: none;
   }
 
   #next {
