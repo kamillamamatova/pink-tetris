@@ -328,6 +328,8 @@ button {
 }
 
 .start-screen #startButton {
+  position: relative;
+  top: -7px;
   width: calc(100% - 68px);
   margin: 0 auto 14px;
   padding: 12px 17px;
