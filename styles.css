@@ -7,6 +7,25 @@
   --line: rgba(255, 189, 226, 0.18);
   --hot-pink: #ff4fa7;
   --light-pink: #ffc1e2;
+  --page-base: #0c0710;
+  --board-bg: #100b14;
+  --overlay-bg: rgba(12, 7, 16, 0.72);
+  --shadow: rgba(0, 0, 0, 0.42);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink: #3d1830;
+  --muted: #79556d;
+  --surface: rgba(255, 244, 250, 0.9);
+  --surface-deep: #fff0f7;
+  --line: rgba(128, 42, 91, 0.22);
+  --hot-pink: #d72f87;
+  --light-pink: #9b2869;
+  --page-base: #fff2f8;
+  --board-bg: #fffafd;
+  --overlay-bg: rgba(255, 242, 249, 0.78);
+  --shadow: rgba(91, 31, 66, 0.2);
 }
 
 * {
@@ -22,7 +41,7 @@ body {
   background:
     radial-gradient(circle at 18% 18%, rgba(255, 79, 167, 0.18), transparent 25rem),
     radial-gradient(circle at 82% 80%, rgba(183, 70, 153, 0.13), transparent 28rem),
-    #0c0710;
+    var(--page-base);
 }
 
 body::before {
@@ -82,7 +101,7 @@ button {
   border: 1px solid var(--line);
   background: var(--surface);
   box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.42),
+    0 24px 70px var(--shadow),
     inset 0 1px rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(12px);
 }
@@ -120,7 +139,7 @@ button {
   width: 112px;
   height: 90px;
   border: 1px solid var(--line);
-  background: #100b14;
+  background: var(--board-bg);
   transition: opacity 120ms ease;
 }
 
@@ -171,7 +190,7 @@ button {
   width: 302px;
   height: 602px;
   overflow: visible;
-  background: #100b14;
+  background: var(--board-bg);
 }
 
 #board {
@@ -188,7 +207,7 @@ button {
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(12, 7, 16, 0.72);
+  background: var(--overlay-bg);
   backdrop-filter: blur(4px);
   transition: opacity 180ms ease;
   z-index: 5;
@@ -517,6 +536,83 @@ button {
   width: 18px;
   height: 18px;
   accent-color: var(--hot-pink);
+}
+
+.theme-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  color: #f8dcea;
+  font-family: system-ui, sans-serif;
+  font-size: 0.69rem;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.theme-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.theme-picker button {
+  min-height: 28px;
+  padding: 4px;
+  color: var(--muted);
+  border: 0;
+  background: transparent;
+}
+
+.theme-picker button.active {
+  color: #351326;
+  background: var(--light-pink);
+}
+
+:root[data-theme="light"] .brand {
+  text-shadow: 0 0 24px rgba(215, 47, 135, 0.2);
+}
+
+:root[data-theme="light"] body::before {
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(128, 42, 91, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128, 42, 91, 0.08) 1px, transparent 1px);
+}
+
+:root[data-theme="light"] .options-view,
+:root[data-theme="light"] .tutorial-view {
+  background: linear-gradient(#fff8fc, #f4dce9);
+}
+
+:root[data-theme="light"] .option-check,
+:root[data-theme="light"] .binding-list > div,
+:root[data-theme="light"] .option-stepper,
+:root[data-theme="light"] .theme-option {
+  color: #4c223a;
+}
+
+:root[data-theme="light"] .binding-list kbd,
+:root[data-theme="light"] .option-stepper button,
+:root[data-theme="light"] .options-reset-row button {
+  color: #54233f;
+  background: #f4dce9;
+}
+
+:root[data-theme="light"] .controls-list p {
+  color: #69465d;
+}
+
+:root[data-theme="light"] kbd {
+  background: rgba(105, 35, 76, 0.08);
+}
+
+:root[data-theme="light"] #hold,
+:root[data-theme="light"] #next {
+  background: var(--board-bg);
 }
 
 .options-view {

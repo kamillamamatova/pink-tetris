@@ -80,6 +80,7 @@ const startHelpButton = document.querySelector("#startHelpButton");
 
 const HIGH_SCORE_STORAGE_KEY = "pinkTetrisHighScores";
 const HIGH_SCORE_LIMIT = 5;
+const THEME_STORAGE_KEY = "pinkTetrisTheme";
 
 // Replace these methods with API calls when the leaderboard has a backend.
 const highScoreRepository = {
@@ -125,6 +126,7 @@ let mouseEnabled = true;
 let ghostEnabled = true;
 let effectsEnabled = true;
 let menuReturnView = overlayMessage;
+let colorTheme = localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
 const optionValues = {
   repeatDelay: 170,
   repeatSpeed: 50,
@@ -743,6 +745,20 @@ function renderOptionValues() {
   document.querySelector("#musicTypeValue").textContent = `Type ${optionValues.musicType}`;
 }
 
+function applyTheme(theme, save = true) {
+  colorTheme = theme === "light" ? "light" : "dark";
+  document.documentElement.dataset.theme = colorTheme;
+  document.querySelector('meta[name="theme-color"]').content =
+    colorTheme === "light" ? "#fff2f8" : "#160d1b";
+  document.querySelectorAll("[data-theme-choice]").forEach((button) => {
+    const selected = button.dataset.themeChoice === colorTheme;
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
+  if (save) localStorage.setItem(THEME_STORAGE_KEY, colorTheme);
+  draw();
+}
+
 function resetOptions() {
   mouseEnabled = true;
   ghostEnabled = true;
@@ -757,6 +773,7 @@ function resetOptions() {
   mouseToggle.checked = true;
   ghostToggle.checked = true;
   effectsToggle.checked = true;
+  applyTheme("dark");
   renderOptionValues();
   draw();
 }
@@ -877,7 +894,8 @@ function drawLineClearEffect() {
 }
 
 function drawGrid() {
-  boardContext.strokeStyle = "rgba(255, 205, 232, 0.055)";
+  boardContext.strokeStyle =
+    colorTheme === "light" ? "rgba(117, 42, 82, 0.12)" : "rgba(255, 205, 232, 0.055)";
   boardContext.lineWidth = 1;
   for (let x = 1; x < COLS; x += 1) {
     boardContext.beginPath();
@@ -1115,6 +1133,9 @@ document.querySelectorAll("[data-step]").forEach((button) => {
     renderOptionValues();
   });
 });
+document.querySelectorAll("[data-theme-choice]").forEach((button) => {
+  button.addEventListener("click", () => applyTheme(button.dataset.themeChoice));
+});
 resetScoresButton.addEventListener("click", () => {
   highScoreRepository.reset();
   renderHighScores();
@@ -1125,6 +1146,7 @@ resetScoresButton.addEventListener("click", () => {
 });
 resetOptionsButton.addEventListener("click", resetOptions);
 
+applyTheme(colorTheme, false);
 renderOptionValues();
 renderHighScores();
 draw();
