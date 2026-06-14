@@ -240,6 +240,49 @@ button {
   display: none;
 }
 
+.start-t {
+  position: absolute;
+  top: 26px;
+  left: 50%;
+  width: 228px;
+  height: 180px;
+  background: linear-gradient(145deg, #ffb5d9 0%, #f164a8 46%, #b93683 100%);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 43%,
+    67% 43%,
+    67% 100%,
+    33% 100%,
+    33% 43%,
+    0 43%
+  );
+  filter:
+    drop-shadow(0 5px 0 #70234f)
+    drop-shadow(0 0 2px #ffe8f4)
+    drop-shadow(0 0 18px rgba(255, 79, 167, 0.48));
+  transform: translateX(-50%);
+}
+
+.start-t::after {
+  position: absolute;
+  inset: 7px;
+  content: "";
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.34), transparent 27%),
+    linear-gradient(#e9549d, #b62f7d);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 38%,
+    64% 38%,
+    64% 100%,
+    36% 100%,
+    36% 38%,
+    0 38%
+  );
+}
+
 .eyebrow {
   margin: 0 0 8px;
   color: var(--hot-pink);
