@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#160d1b" />
     <title>Pink Tetris</title>
-    <link rel="stylesheet" href="styles.css?v=11" />
+    <link rel="stylesheet" href="styles.css?v=12" />
   </head>
   <body>
     <main class="game-shell">
@@ -54,10 +54,12 @@
           ></canvas>
           <div class="overlay" id="overlay">
             <div class="overlay-card">
-              <div id="overlayMessage">
+              <div class="start-screen" id="overlayMessage">
                 <p class="eyebrow" id="overlayEyebrow">Ready?</p>
                 <h1 id="overlayTitle">Pink Tetris</h1>
                 <p id="overlayText">Stack the pieces. Clear the lines.</p>
+                <button id="startButton" type="button">Play</button>
+                <div class="start-level">Level: <strong id="menuLevel">1</strong></div>
                 <section class="high-scores" aria-labelledby="highScoresTitle">
                   <div class="high-scores-heading">
                     <h2 id="highScoresTitle">High Scores</h2>
@@ -68,7 +70,10 @@
                     Finish a game to set the first score.
                   </p>
                 </section>
-                <button id="startButton" type="button">Start game</button>
+                <div class="start-menu-actions">
+                  <button id="startOptionsButton" type="button" aria-label="Options">⚙</button>
+                  <button id="startHelpButton" type="button" aria-label="How to play">?</button>
+                </div>
               </div>
 
               <div class="overlay-view hidden" id="pauseMenu">
@@ -248,6 +253,6 @@
       <footer>Move to aim · Click to place · Double-click to hold</footer>
     </main>
 
-    <script src="game.js?v=30"></script>
+    <script src="game.js?v=31"></script>
   </body>
 </html>

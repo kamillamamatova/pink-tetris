@@ -73,6 +73,9 @@ const resetScoresButton = document.querySelector("#resetScoresButton");
 const resetOptionsButton = document.querySelector("#resetOptionsButton");
 const highScoresList = document.querySelector("#highScoresList");
 const highScoresEmpty = document.querySelector("#highScoresEmpty");
+const menuLevel = document.querySelector("#menuLevel");
+const startOptionsButton = document.querySelector("#startOptionsButton");
+const startHelpButton = document.querySelector("#startHelpButton");
 
 const HIGH_SCORE_STORAGE_KEY = "pinkTetrisHighScores";
 const HIGH_SCORE_LIMIT = 5;
@@ -119,6 +122,7 @@ let placementClickTimer = null;
 let mouseEnabled = true;
 let ghostEnabled = true;
 let effectsEnabled = true;
+let menuReturnView = overlayMessage;
 const optionValues = {
   repeatDelay: 170,
   repeatSpeed: 50,
@@ -710,6 +714,7 @@ function togglePause() {
 
 function showOverlay(eyebrow, title, text, buttonText) {
   showOverlayView(overlayMessage);
+  overlayMessage.classList.toggle("start-screen", eyebrow === "Ready?");
   overlayEyebrow.textContent = eyebrow;
   overlayTitle.textContent = title;
   overlayText.textContent = text;
@@ -986,6 +991,7 @@ function updateStats() {
   scoreElement.textContent = score.toLocaleString();
   linesElement.textContent = lines;
   levelElement.textContent = level;
+  menuLevel.textContent = level;
 }
 
 function handleAction(action) {
@@ -1052,11 +1058,25 @@ startButton.addEventListener("click", () => {
 });
 pauseButton.addEventListener("click", togglePause);
 resumeButton.addEventListener("click", togglePause);
-optionsButton.addEventListener("click", () => showOverlayView(optionsMenu));
-howToPlayButton.addEventListener("click", () => showOverlayView(howToPlayMenu));
+optionsButton.addEventListener("click", () => {
+  menuReturnView = pauseMenu;
+  showOverlayView(optionsMenu);
+});
+howToPlayButton.addEventListener("click", () => {
+  menuReturnView = pauseMenu;
+  showOverlayView(howToPlayMenu);
+});
+startOptionsButton.addEventListener("click", () => {
+  menuReturnView = overlayMessage;
+  showOverlayView(optionsMenu);
+});
+startHelpButton.addEventListener("click", () => {
+  menuReturnView = overlayMessage;
+  showOverlayView(howToPlayMenu);
+});
 quitButton.addEventListener("click", quitToTitle);
 document.querySelectorAll("[data-menu-back]").forEach((button) => {
-  button.addEventListener("click", showPauseMenu);
+  button.addEventListener("click", () => showOverlayView(menuReturnView));
 });
 ghostToggle.addEventListener("change", () => {
   ghostEnabled = ghostToggle.checked;
