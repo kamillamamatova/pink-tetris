@@ -328,11 +328,11 @@ button {
 }
 
 .start-screen #startButton {
-  width: calc(100% - 50px);
+  width: calc(100% - 68px);
   margin: 0 auto 14px;
-  padding: 15px 19px;
+  padding: 12px 17px;
   color: #2b1121;
-  font-size: 1.45rem;
+  font-size: 1.3rem;
   border: 3px solid rgba(255, 255, 255, 0.54);
   border-radius: 15px;
   background: linear-gradient(#ffd4ea, #e86baa);
