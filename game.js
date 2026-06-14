@@ -74,6 +74,7 @@ const resetOptionsButton = document.querySelector("#resetOptionsButton");
 const highScoresList = document.querySelector("#highScoresList");
 const highScoresEmpty = document.querySelector("#highScoresEmpty");
 const menuLevel = document.querySelector("#menuLevel");
+const levelButton = document.querySelector("#levelButton");
 const startOptionsButton = document.querySelector("#startOptionsButton");
 const startHelpButton = document.querySelector("#startHelpButton");
 
@@ -108,6 +109,7 @@ let bag = [];
 let score = 0;
 let lines = 0;
 let level = 1;
+let startingLevel = 1;
 let running = false;
 let paused = false;
 let gameOver = false;
@@ -163,7 +165,7 @@ function resetGame() {
   bag = [];
   score = 0;
   lines = 0;
-  level = 1;
+  level = startingLevel;
   gameOver = false;
   paused = false;
   animatingDrop = false;
@@ -625,7 +627,7 @@ function clearCompletedRows(rows) {
   const points = [0, 100, 300, 500, 800];
   score += points[cleared] * level;
   lines += cleared;
-  level = Math.floor(lines / 10) + 1;
+  level = startingLevel + Math.floor(lines / 10);
   updateStats();
   spawnNextPiece();
 }
@@ -775,7 +777,7 @@ function quitToTitle() {
   holdUsed = false;
   score = 0;
   lines = 0;
-  level = 1;
+  level = startingLevel;
   updateStats();
   updateHoldDisplay();
   pauseButton.disabled = true;
@@ -991,7 +993,6 @@ function updateStats() {
   scoreElement.textContent = score.toLocaleString();
   linesElement.textContent = lines;
   levelElement.textContent = level;
-  menuLevel.textContent = level;
 }
 
 function handleAction(action) {
@@ -1055,6 +1056,14 @@ startButton.addEventListener("click", () => {
   } else {
     startGame();
   }
+});
+levelButton.addEventListener("click", () => {
+  const selectableLevels = [1, 5, 10, 15, 20, 25];
+  const currentIndex = selectableLevels.indexOf(startingLevel);
+  startingLevel = selectableLevels[(currentIndex + 1) % selectableLevels.length];
+  level = startingLevel;
+  menuLevel.textContent = startingLevel;
+  updateStats();
 });
 pauseButton.addEventListener("click", togglePause);
 resumeButton.addEventListener("click", togglePause);

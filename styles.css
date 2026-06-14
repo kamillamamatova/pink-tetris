@@ -304,6 +304,8 @@ button {
   margin: 0 auto 14px;
   padding: 9px;
   color: white;
+  cursor: pointer;
+  font-family: inherit;
   font-size: 1rem;
   font-weight: 700;
   text-align: center;
@@ -312,6 +314,9 @@ button {
   border-radius: 12px;
   background: linear-gradient(rgba(117, 95, 111, 0.9), rgba(55, 42, 52, 0.96));
   box-shadow: 0 0 0 6px rgba(10, 7, 11, 0.34);
+  transition:
+    transform 100ms ease,
+    filter 100ms ease;
 }
 
 .start-screen .start-level {
