@@ -242,10 +242,10 @@ button {
 
 .start-t {
   position: absolute;
-  top: 26px;
+  top: 62px;
   left: 50%;
-  width: 228px;
-  height: 180px;
+  width: 194px;
+  height: 153px;
   background: linear-gradient(145deg, #ffb5d9 0%, #f164a8 46%, #b93683 100%);
   clip-path: polygon(
     0 0,
