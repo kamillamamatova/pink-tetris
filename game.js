@@ -118,6 +118,8 @@ let animatingDrop = false;
 let landingEffect = null;
 let lineClearEffect = null;
 let aimedLandingY = null;
+let lastMouseOrientationKey = null;
+let lastMouseRotationColumn = null;
 let lastTime = 0;
 let dropCounter = 0;
 let animationFrame = null;
@@ -174,6 +176,8 @@ function resetGame() {
   landingEffect = null;
   lineClearEffect = null;
   aimedLandingY = null;
+  lastMouseOrientationKey = null;
+  lastMouseRotationColumn = null;
   heldPieceType = null;
   holdUsed = false;
   clearTimeout(placementClickTimer);
@@ -266,9 +270,32 @@ function guidePieceToPointer(event) {
   const bestFit = getBestPointerFit(event);
   if (!bestFit) return;
 
+  const currentKey = getOrientationKey(currentPiece.matrix);
+  const nextKey = getOrientationKey(bestFit.matrix);
+  const cursorColumn = getPointerCanvasX(event) / BLOCK;
+  const movedEnoughToRotate =
+    lastMouseRotationColumn === null ||
+    Math.abs(cursorColumn - lastMouseRotationColumn) >= 0.7;
+
+  if (nextKey !== currentKey && nextKey !== lastMouseOrientationKey && !movedEnoughToRotate) {
+    const sameOrientationFit = getBestPointerFit(event, {
+      preferredOrientationKey: currentKey,
+    });
+    if (sameOrientationFit) {
+      currentPiece.x = sameOrientationFit.x;
+      aimedLandingY = sameOrientationFit.landingY;
+      draw();
+      return;
+    }
+  }
+
   currentPiece.matrix = bestFit.matrix;
   currentPiece.x = bestFit.x;
   aimedLandingY = bestFit.landingY;
+  if (nextKey !== currentKey) {
+    lastMouseOrientationKey = nextKey;
+    lastMouseRotationColumn = cursorColumn;
+  }
   draw();
 }
 
@@ -280,6 +307,8 @@ function placePieceAtPointer(event) {
     currentPiece.matrix = bestFit.matrix;
     currentPiece.x = bestFit.x;
     aimedLandingY = bestFit.landingY;
+    lastMouseOrientationKey = getOrientationKey(bestFit.matrix);
+    lastMouseRotationColumn = getPointerCanvasX(event) / BLOCK;
   }
   flashDrop(aimedLandingY);
 }
@@ -298,6 +327,8 @@ function holdCurrentPiece() {
   heldPieceType = outgoingType;
   holdUsed = true;
   aimedLandingY = null;
+  lastMouseOrientationKey = null;
+  lastMouseRotationColumn = null;
   dropCounter = 0;
   updateHoldDisplay();
 
@@ -477,11 +508,15 @@ function getLandingContact(matrix, x, landingY) {
   return contact;
 }
 
-function getBestPointerFit(event) {
+function getBestPointerFit(event, options = {}) {
   const cursorColumn = getPointerCanvasX(event) / BLOCK;
   const candidates = [];
+  const preferredOrientationKey = options.preferredOrientationKey ?? null;
 
   for (const orientation of getOrientations(currentPiece.matrix)) {
+    if (preferredOrientationKey && getOrientationKey(orientation.matrix) !== preferredOrientationKey) {
+      continue;
+    }
     const preferredX = Math.round(cursorColumn - orientation.matrix[0].length / 2);
 
     for (let offset = 0; offset < COLS; offset += 1) {
@@ -510,10 +545,10 @@ function getBestPointerFit(event) {
 
   candidates.sort(
     (a, b) =>
-      b.contact - a.contact ||
       a.cursorDistance - b.cursorDistance ||
-      b.landingY - a.landingY ||
-      a.turns - b.turns,
+      a.turns - b.turns ||
+      b.contact - a.contact ||
+      b.landingY - a.landingY,
   );
   return candidates[0] ?? null;
 }
@@ -580,6 +615,8 @@ function spawnNextPiece() {
   holdUsed = false;
   updateHoldDisplay();
   aimedLandingY = null;
+  lastMouseOrientationKey = null;
+  lastMouseRotationColumn = null;
   dropCounter = 0;
 
   if (collide(currentPiece)) {
