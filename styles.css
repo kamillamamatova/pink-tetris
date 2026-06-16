@@ -22,8 +22,8 @@
   --line: rgba(128, 42, 91, 0.22);
   --hot-pink: #d72f87;
   --light-pink: #9b2869;
-  --page-base: #fff2f8;
-  --board-bg: #fffafd;
+  --page-base: #f8ddea;
+  --board-bg: #ead0df;
   --overlay-bg: rgba(255, 242, 249, 0.78);
   --shadow: rgba(91, 31, 66, 0.2);
 }
@@ -577,10 +577,18 @@ button {
 }
 
 :root[data-theme="light"] body::before {
-  opacity: 0.22;
+  opacity: 0.16;
   background-image:
-    linear-gradient(rgba(128, 42, 91, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(128, 42, 91, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(128, 42, 91, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128, 42, 91, 0.06) 1px, transparent 1px);
+}
+
+:root[data-theme="light"] .board-frame {
+  background: #e2bfce;
+}
+
+:root[data-theme="light"] .overlay {
+  background: rgba(239, 207, 222, 0.68);
 }
 
 :root[data-theme="light"] .options-view,

@@ -815,6 +815,8 @@ function getGhostY() {
 
 function draw() {
   boardContext.clearRect(0, 0, boardCanvas.width, boardCanvas.height);
+  boardContext.fillStyle = colorTheme === "light" ? "#ead0df" : "#100b14";
+  boardContext.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
   drawGrid();
 
   for (let y = 0; y < ROWS; y += 1) {
@@ -895,7 +897,7 @@ function drawLineClearEffect() {
 
 function drawGrid() {
   boardContext.strokeStyle =
-    colorTheme === "light" ? "rgba(117, 42, 82, 0.12)" : "rgba(255, 205, 232, 0.055)";
+    colorTheme === "light" ? "rgba(88, 33, 63, 0.18)" : "rgba(255, 205, 232, 0.055)";
   boardContext.lineWidth = 1;
   for (let x = 1; x < COLS; x += 1) {
     boardContext.beginPath();
