@@ -614,6 +614,21 @@ button {
   color: #69465d;
 }
 
+:root[data-theme="light"] .menu-buttons button,
+:root[data-theme="light"] .menu-back {
+  color: #8f2864;
+  border-color: rgba(105, 35, 76, 0.2);
+  background: #e7aecb;
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.42),
+    0 3px 0 rgba(105, 35, 76, 0.14);
+}
+
+:root[data-theme="light"] #quitButton {
+  color: #cf4f91;
+  background: #e3a6c5;
+}
+
 :root[data-theme="light"] kbd {
   background: rgba(105, 35, 76, 0.08);
 }
