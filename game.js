@@ -937,16 +937,18 @@ function drawBlock(context, x, y, color, size, ghost = false) {
 
   if (ghost) {
     context.save();
-    context.globalAlpha = colorTheme === "light" ? 0.3 : 0.24;
+    context.globalAlpha = colorTheme === "light" ? 0.16 : 0.24;
     context.fillStyle = color;
     context.fillRect(px + 3, py + 3, blockSize - 6, blockSize - 6);
     context.globalAlpha = 1;
-    context.strokeStyle = colorTheme === "light" ? "#8c245f" : "#fff2fa";
-    context.lineWidth = 2;
+    context.strokeStyle = colorTheme === "light" ? `${color}80` : "#fff2fa";
+    context.lineWidth = colorTheme === "light" ? 1 : 2;
     context.strokeRect(px + 2, py + 2, blockSize - 4, blockSize - 4);
     context.strokeStyle = `${color}c0`;
-    context.lineWidth = 1;
-    context.strokeRect(px + 5, py + 5, blockSize - 10, blockSize - 10);
+    context.lineWidth = colorTheme === "light" ? 0.5 : 1;
+    if (colorTheme !== "light") {
+      context.strokeRect(px + 5, py + 5, blockSize - 10, blockSize - 10);
+    }
     context.restore();
     return;
   }
