@@ -202,7 +202,8 @@ function startGame() {
   running = true;
   overlay.classList.add("hidden");
   pauseButton.disabled = false;
-  pauseButton.textContent = "Pause";
+  pauseButton.classList.remove("resume-label");
+  pauseButton.setAttribute("aria-label", "Pause");
   animationFrame = requestAnimationFrame(update);
 }
 
@@ -779,7 +780,14 @@ function renderHighScores() {
 function togglePause() {
   if (!running || gameOver) return;
   paused = !paused;
-  pauseButton.textContent = paused ? "Resume" : "Pause";
+  pauseButton.classList.toggle("resume-label", paused);
+  pauseButton.textContent = paused ? "Resume" : "";
+  if (!paused) {
+    const icon = document.createElement("span");
+    icon.setAttribute("aria-hidden", "true");
+    pauseButton.append(icon);
+  }
+  pauseButton.setAttribute("aria-label", paused ? "Resume" : "Pause");
 
   if (paused) {
     cancelAnimationFrame(animationFrame);
@@ -875,7 +883,14 @@ function quitToTitle() {
   updateStats();
   updateHoldDisplay();
   pauseButton.disabled = true;
-  pauseButton.textContent = "Pause";
+  pauseButton.classList.remove("resume-label");
+  pauseButton.textContent = "";
+  {
+    const icon = document.createElement("span");
+    icon.setAttribute("aria-hidden", "true");
+    pauseButton.append(icon);
+  }
+  pauseButton.setAttribute("aria-label", "Pause");
   draw();
   showOverlay("Ready?", "Pink Tetris", "Stack the pieces. Clear the lines.", "Start game");
 }

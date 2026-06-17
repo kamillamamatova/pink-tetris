@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1d0a16" />
     <title>Pink Tetris</title>
-    <link rel="stylesheet" href="styles.css?v=28" />
+    <link rel="stylesheet" href="styles.css?v=29" />
   </head>
   <body>
     <main class="game-shell">
@@ -230,8 +230,14 @@
               <p><kbd>Space</kbd> Hard drop</p>
               <p><kbd>Esc</kbd> Pause</p>
             </div>
-            <button class="secondary-button" id="pauseButton" type="button" disabled>
-              Pause
+            <button
+              class="secondary-button pause-icon-button"
+              id="pauseButton"
+              type="button"
+              aria-label="Pause"
+              disabled
+            >
+              <span aria-hidden="true"></span>
             </button>
           </aside>
         </div>
@@ -264,6 +270,6 @@
       <footer>Move to aim · Click to place · Double-click to hold</footer>
     </main>
 
-    <script src="game.js?v=42"></script>
+    <script src="game.js?v=44"></script>
   </body>
 </html>
