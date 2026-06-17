@@ -875,7 +875,7 @@ function getGhostY() {
 function draw() {
   updateVisualPieceX();
   boardContext.clearRect(0, 0, boardCanvas.width, boardCanvas.height);
-  boardContext.fillStyle = colorTheme === "light" ? "#ead0df" : "#100b14";
+  boardContext.fillStyle = colorTheme === "light" ? "#ead0df" : "#160812";
   boardContext.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
   drawGrid();
 

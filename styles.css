@@ -2,14 +2,14 @@
   color-scheme: dark;
   --ink: #fff7fc;
   --muted: #caaac3;
-  --surface: rgba(38, 20, 43, 0.86);
-  --surface-deep: #160d1b;
+  --surface: rgba(48, 16, 36, 0.86);
+  --surface-deep: #1d0a16;
   --line: rgba(255, 189, 226, 0.18);
   --hot-pink: #ff4fa7;
   --light-pink: #ffc1e2;
-  --page-base: #0c0710;
-  --board-bg: #100b14;
-  --overlay-bg: rgba(12, 7, 16, 0.72);
+  --page-base: #130711;
+  --board-bg: #160812;
+  --overlay-bg: rgba(20, 6, 15, 0.72);
   --shadow: rgba(0, 0, 0, 0.42);
 }
 
@@ -39,8 +39,9 @@ body {
   color: var(--ink);
   font-family: "Courier New", Courier, monospace;
   background:
-    radial-gradient(circle at 18% 18%, rgba(255, 79, 167, 0.18), transparent 25rem),
-    radial-gradient(circle at 82% 80%, rgba(183, 70, 153, 0.13), transparent 28rem),
+    radial-gradient(circle at 18% 18%, rgba(255, 84, 156, 0.22), transparent 25rem),
+    radial-gradient(circle at 82% 80%, rgba(255, 53, 137, 0.16), transparent 28rem),
+    radial-gradient(circle at 50% 48%, rgba(202, 33, 111, 0.1), transparent 24rem),
     var(--page-base);
 }
 
