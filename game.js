@@ -339,6 +339,12 @@ function placePieceAtPointer(event) {
   flashDrop(aimedLandingY);
 }
 
+function canUseClickForPlacement(event) {
+  if (!mouseEnabled || !canControl() || event.button !== 0) return false;
+  if (!overlay.classList.contains("hidden")) return false;
+  return !event.target.closest("button, input, label, a, .game-controls");
+}
+
 function holdCurrentPiece() {
   if (!canControl() || holdUsed) return;
 
@@ -1153,8 +1159,8 @@ document.querySelectorAll("[data-action]").forEach((button) => {
 
 document.addEventListener("pointermove", guidePieceToPointer);
 document.addEventListener("mousemove", guidePieceToPointer);
-boardCanvas.addEventListener("click", (event) => {
-  if (!mouseEnabled) return;
+document.addEventListener("click", (event) => {
+  if (!canUseClickForPlacement(event)) return;
   clearTimeout(placementClickTimer);
   placementClickTimer = window.setTimeout(() => placePieceAtPointer(event), 220);
 });
