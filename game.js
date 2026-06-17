@@ -119,6 +119,7 @@ let landingEffect = null;
 let lineClearEffect = null;
 let aimedLandingY = null;
 let visualPieceX = null;
+let pointerGhostFit = null;
 let lastMouseOrientationKey = null;
 let lastMouseRotationColumn = null;
 let lastTime = 0;
@@ -178,6 +179,7 @@ function resetGame() {
   lineClearEffect = null;
   aimedLandingY = null;
   visualPieceX = null;
+  pointerGhostFit = null;
   lastMouseOrientationKey = null;
   lastMouseRotationColumn = null;
   heldPieceType = null;
@@ -288,6 +290,11 @@ function guidePieceToPointer(event) {
     if (sameOrientationFit) {
       currentPiece.x = sameOrientationFit.x;
       aimedLandingY = sameOrientationFit.landingY;
+      pointerGhostFit = {
+        matrix: sameOrientationFit.matrix.map((row) => [...row]),
+        x: sameOrientationFit.x,
+        landingY: sameOrientationFit.landingY,
+      };
       return;
     }
   }
@@ -295,6 +302,11 @@ function guidePieceToPointer(event) {
   currentPiece.matrix = bestFit.matrix;
   currentPiece.x = bestFit.x;
   aimedLandingY = bestFit.landingY;
+  pointerGhostFit = {
+    matrix: bestFit.matrix.map((row) => [...row]),
+    x: bestFit.x,
+    landingY: bestFit.landingY,
+  };
   if (nextKey !== currentKey) {
     visualPieceX = bestFit.x;
     lastMouseOrientationKey = nextKey;
@@ -305,14 +317,24 @@ function guidePieceToPointer(event) {
 function placePieceAtPointer(event) {
   if (!mouseEnabled || !canControl()) return;
 
-  const bestFit = getBestPointerFit(event);
-  if (bestFit) {
-    currentPiece.matrix = bestFit.matrix;
-    currentPiece.x = bestFit.x;
-    visualPieceX = bestFit.x;
-    aimedLandingY = bestFit.landingY;
-    lastMouseOrientationKey = getOrientationKey(bestFit.matrix);
+  const lockedFit = pointerGhostFit;
+  if (lockedFit) {
+    currentPiece.matrix = lockedFit.matrix.map((row) => [...row]);
+    currentPiece.x = lockedFit.x;
+    visualPieceX = lockedFit.x;
+    aimedLandingY = lockedFit.landingY;
+    lastMouseOrientationKey = getOrientationKey(lockedFit.matrix);
     lastMouseRotationColumn = getPointerCanvasX(event) / BLOCK;
+  } else {
+    const bestFit = getBestPointerFit(event);
+    if (bestFit) {
+      currentPiece.matrix = bestFit.matrix;
+      currentPiece.x = bestFit.x;
+      visualPieceX = bestFit.x;
+      aimedLandingY = bestFit.landingY;
+      lastMouseOrientationKey = getOrientationKey(bestFit.matrix);
+      lastMouseRotationColumn = getPointerCanvasX(event) / BLOCK;
+    }
   }
   flashDrop(aimedLandingY);
 }
@@ -332,6 +354,7 @@ function holdCurrentPiece() {
   holdUsed = true;
   aimedLandingY = null;
   visualPieceX = currentPiece.x;
+  pointerGhostFit = null;
   lastMouseOrientationKey = null;
   lastMouseRotationColumn = null;
   dropCounter = 0;
@@ -620,6 +643,7 @@ function spawnNextPiece() {
   currentPiece = nextPiece;
   nextPiece = takeFromBag();
   visualPieceX = currentPiece.x;
+  pointerGhostFit = null;
   holdUsed = false;
   updateHoldDisplay();
   aimedLandingY = null;
@@ -836,6 +860,7 @@ function quitToTitle() {
   currentPiece = null;
   nextPiece = null;
   visualPieceX = null;
+  pointerGhostFit = null;
   heldPieceType = null;
   holdUsed = false;
   score = 0;
