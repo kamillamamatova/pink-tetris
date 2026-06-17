@@ -118,6 +118,7 @@ let animatingDrop = false;
 let landingEffect = null;
 let lineClearEffect = null;
 let aimedLandingY = null;
+let visualPieceX = null;
 let lastMouseOrientationKey = null;
 let lastMouseRotationColumn = null;
 let lastTime = 0;
@@ -176,6 +177,7 @@ function resetGame() {
   landingEffect = null;
   lineClearEffect = null;
   aimedLandingY = null;
+  visualPieceX = null;
   lastMouseOrientationKey = null;
   lastMouseRotationColumn = null;
   heldPieceType = null;
@@ -185,6 +187,7 @@ function resetGame() {
   updateHoldDisplay();
   currentPiece = takeFromBag();
   nextPiece = takeFromBag();
+  visualPieceX = currentPiece.x;
   dropCounter = 0;
   lastTime = performance.now();
   updateStats();
@@ -245,6 +248,7 @@ function collide(piece, offsetX = 0, offsetY = 0, matrix = piece.matrix) {
 function moveHorizontal(direction) {
   if (!canControl() || collide(currentPiece, direction, 0)) return;
   currentPiece.x += direction;
+  visualPieceX = currentPiece.x;
   aimedLandingY = null;
   draw();
 }
@@ -284,7 +288,6 @@ function guidePieceToPointer(event) {
     if (sameOrientationFit) {
       currentPiece.x = sameOrientationFit.x;
       aimedLandingY = sameOrientationFit.landingY;
-      draw();
       return;
     }
   }
@@ -293,10 +296,10 @@ function guidePieceToPointer(event) {
   currentPiece.x = bestFit.x;
   aimedLandingY = bestFit.landingY;
   if (nextKey !== currentKey) {
+    visualPieceX = bestFit.x;
     lastMouseOrientationKey = nextKey;
     lastMouseRotationColumn = cursorColumn;
   }
-  draw();
 }
 
 function placePieceAtPointer(event) {
@@ -306,6 +309,7 @@ function placePieceAtPointer(event) {
   if (bestFit) {
     currentPiece.matrix = bestFit.matrix;
     currentPiece.x = bestFit.x;
+    visualPieceX = bestFit.x;
     aimedLandingY = bestFit.landingY;
     lastMouseOrientationKey = getOrientationKey(bestFit.matrix);
     lastMouseRotationColumn = getPointerCanvasX(event) / BLOCK;
@@ -327,6 +331,7 @@ function holdCurrentPiece() {
   heldPieceType = outgoingType;
   holdUsed = true;
   aimedLandingY = null;
+  visualPieceX = currentPiece.x;
   lastMouseOrientationKey = null;
   lastMouseRotationColumn = null;
   dropCounter = 0;
@@ -344,6 +349,7 @@ function moveDown(manual = true) {
 
   if (!collide(currentPiece, 0, 1)) {
     currentPiece.y += 1;
+    visualPieceX = currentPiece.x;
     aimedLandingY = null;
     if (manual) score += 1;
     dropCounter = 0;
@@ -362,6 +368,7 @@ function hardDrop() {
   let distance = 0;
   while (!collide(currentPiece, 0, 1)) {
     currentPiece.y += 1;
+    visualPieceX = currentPiece.x;
     distance += 1;
   }
   score += distance * 2;
@@ -612,6 +619,7 @@ function lockPiece() {
 function spawnNextPiece() {
   currentPiece = nextPiece;
   nextPiece = takeFromBag();
+  visualPieceX = currentPiece.x;
   holdUsed = false;
   updateHoldDisplay();
   aimedLandingY = null;
@@ -827,6 +835,7 @@ function quitToTitle() {
   board = createBoard();
   currentPiece = null;
   nextPiece = null;
+  visualPieceX = null;
   heldPieceType = null;
   holdUsed = false;
   score = 0;
@@ -844,6 +853,19 @@ function canControl() {
   return running && !paused && !gameOver && !animatingDrop && !lineClearEffect && currentPiece;
 }
 
+function updateVisualPieceX() {
+  if (!currentPiece) {
+    visualPieceX = null;
+    return;
+  }
+  if (visualPieceX === null || Math.abs(visualPieceX - currentPiece.x) > 2.5) {
+    visualPieceX = currentPiece.x;
+    return;
+  }
+  visualPieceX += (currentPiece.x - visualPieceX) * 0.32;
+  if (Math.abs(currentPiece.x - visualPieceX) < 0.02) visualPieceX = currentPiece.x;
+}
+
 function getGhostY() {
   let offset = 0;
   while (!collide(currentPiece, 0, offset + 1)) offset += 1;
@@ -851,6 +873,7 @@ function getGhostY() {
 }
 
 function draw() {
+  updateVisualPieceX();
   boardContext.clearRect(0, 0, boardCanvas.width, boardCanvas.height);
   boardContext.fillStyle = colorTheme === "light" ? "#ead0df" : "#100b14";
   boardContext.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
@@ -867,7 +890,7 @@ function draw() {
     boardCanvas.dataset.pieceY = currentPiece.y;
     boardCanvas.dataset.pieceShape = getOrientationKey(currentPiece.matrix);
     if (ghostEnabled) drawPiece(currentPiece, aimedLandingY ?? getGhostY(), true);
-    drawPiece(currentPiece, currentPiece.y, false);
+    drawPiece(currentPiece, currentPiece.y, false, visualPieceX);
   }
 
   if (landingEffect) drawLandingEffect();
@@ -950,13 +973,13 @@ function drawGrid() {
   }
 }
 
-function drawPiece(piece, targetY, ghost) {
+function drawPiece(piece, targetY, ghost, visualX = piece.x) {
   for (let y = 0; y < piece.matrix.length; y += 1) {
     for (let x = 0; x < piece.matrix[y].length; x += 1) {
       if (!piece.matrix[y][x] || targetY + y < 0) continue;
       drawBlock(
         boardContext,
-        piece.x + x,
+        visualX + x,
         targetY + y,
         COLORS[piece.type],
         BLOCK,
