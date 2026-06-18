@@ -702,8 +702,9 @@ function clearCompletedRows(rows) {
     board.unshift(Array(COLS).fill(null));
   }
 
-  const points = [0, 100, 300, 500, 800];
-  score += points[cleared] * level;
+  const lineClearPoints = [0, 100, 300, 500, 800];
+  const multiLineBonus = [0, 0, 150, 400, 750];
+  score += (lineClearPoints[cleared] + multiLineBonus[cleared]) * level;
   lines += cleared;
   level = startingLevel + Math.floor(lines / 10);
   updateStats();
