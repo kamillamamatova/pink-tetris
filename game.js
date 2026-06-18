@@ -1114,7 +1114,7 @@ function drawNext() {
   nextContext.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
   if (nextPieces.length === 0) return;
 
-  const previewBlock = 15;
+  const previewBlock = 20;
   const slotHeight = nextCanvas.height / 3;
 
   nextPieces.slice(0, 3).forEach((piece, index) => {
