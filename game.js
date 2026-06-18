@@ -117,6 +117,7 @@ let gameOver = false;
 let animatingDrop = false;
 let landingEffect = null;
 let lineClearEffect = null;
+let bonusTextEffect = null;
 let aimedLandingY = null;
 let visualPieceX = null;
 let pointerGhostFit = null;
@@ -177,6 +178,7 @@ function resetGame() {
   animatingDrop = false;
   landingEffect = null;
   lineClearEffect = null;
+  bonusTextEffect = null;
   aimedLandingY = null;
   visualPieceX = null;
   pointerGhostFit = null;
@@ -675,6 +677,7 @@ function getCompletedRows() {
 }
 
 function startLineClearEffect(rows) {
+  bonusTextEffect = getLineClearBonusCallout(rows);
   if (!effectsEnabled) {
     clearCompletedRows(rows);
     return;
@@ -709,6 +712,19 @@ function clearCompletedRows(rows) {
   level = startingLevel + Math.floor(lines / 10);
   updateStats();
   spawnNextPiece();
+}
+
+function getLineClearBonusCallout(rows) {
+  const cleared = rows.length;
+  const bonusLabels = ["", "", "Double", "Triple", "Tetris"];
+  const multiLineBonus = [0, 0, 150, 400, 750];
+  if (cleared < 2) return null;
+  return {
+    text: `${bonusLabels[cleared]} +${(multiLineBonus[cleared] * level).toLocaleString()}`,
+    y: Math.min(...rows),
+    startedAt: performance.now(),
+    duration: 620,
+  };
 }
 
 function createLineClearParticles(rows) {
@@ -865,6 +881,7 @@ function quitToTitle() {
   animatingDrop = false;
   landingEffect = null;
   lineClearEffect = null;
+  bonusTextEffect = null;
   board = createBoard();
   currentPiece = null;
   nextPiece = null;
@@ -930,6 +947,7 @@ function draw() {
 
   if (landingEffect) drawLandingEffect();
   if (lineClearEffect) drawLineClearEffect();
+  if (bonusTextEffect) drawBonusTextEffect();
   drawNext();
   drawHold();
 }
@@ -987,6 +1005,35 @@ function drawLineClearEffect() {
     const size = particle.size * (1 - progress);
     boardContext.fillRect(x - size / 2, y - size / 2, size, size);
   }
+  boardContext.restore();
+}
+
+function drawBonusTextEffect() {
+  const progress = Math.min(
+    1,
+    (performance.now() - bonusTextEffect.startedAt) / bonusTextEffect.duration,
+  );
+  if (progress >= 1) {
+    bonusTextEffect = null;
+    return;
+  }
+
+  const rise = progress * 18;
+  const alpha = progress < 0.18 ? progress / 0.18 : 1 - progress * 0.35;
+  const y = Math.max(48, bonusTextEffect.y * BLOCK - 8 - rise);
+
+  boardContext.save();
+  boardContext.globalAlpha = alpha;
+  boardContext.font = "700 22px 'Courier New', monospace";
+  boardContext.textAlign = "center";
+  boardContext.textBaseline = "middle";
+  boardContext.lineWidth = 5;
+  boardContext.strokeStyle = colorTheme === "light" ? "rgba(255, 240, 248, 0.92)" : "#160812";
+  boardContext.fillStyle = colorTheme === "light" ? "#b12e78" : "#ffc1e2";
+  boardContext.shadowColor = colorTheme === "light" ? "rgba(177, 46, 120, 0.28)" : "#ff4fa7";
+  boardContext.shadowBlur = 12;
+  boardContext.strokeText(bonusTextEffect.text.toUpperCase(), boardCanvas.width / 2, y);
+  boardContext.fillText(bonusTextEffect.text.toUpperCase(), boardCanvas.width / 2, y);
   boardContext.restore();
 }
 
