@@ -103,7 +103,7 @@ const highScoreRepository = {
 
 let board = createBoard();
 let currentPiece = null;
-let nextPiece = null;
+let nextPieces = [];
 let heldPieceType = null;
 let holdUsed = false;
 let bag = [];
@@ -190,7 +190,7 @@ function resetGame() {
   placementClickTimer = null;
   updateHoldDisplay();
   currentPiece = takeFromBag();
-  nextPiece = takeFromBag();
+  nextPieces = [takeFromBag(), takeFromBag(), takeFromBag()];
   visualPieceX = currentPiece.x;
   dropCounter = 0;
   lastTime = performance.now();
@@ -355,8 +355,8 @@ function holdCurrentPiece() {
   if (heldPieceType) {
     currentPiece = createPiece(heldPieceType);
   } else {
-    currentPiece = nextPiece;
-    nextPiece = takeFromBag();
+    currentPiece = nextPieces.shift();
+    nextPieces.push(takeFromBag());
   }
 
   heldPieceType = outgoingType;
@@ -649,8 +649,8 @@ function lockPiece() {
 }
 
 function spawnNextPiece() {
-  currentPiece = nextPiece;
-  nextPiece = takeFromBag();
+  currentPiece = nextPieces.shift();
+  nextPieces.push(takeFromBag());
   visualPieceX = currentPiece.x;
   pointerGhostFit = null;
   holdUsed = false;
@@ -884,7 +884,7 @@ function quitToTitle() {
   bonusTextEffect = null;
   board = createBoard();
   currentPiece = null;
-  nextPiece = null;
+  nextPieces = [];
   visualPieceX = null;
   pointerGhostFit = null;
   heldPieceType = null;
@@ -1112,24 +1112,28 @@ function drawBlock(context, x, y, color, size, ghost = false) {
 
 function drawNext() {
   nextContext.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
-  if (!nextPiece) return;
+  if (nextPieces.length === 0) return;
 
-  const previewBlock = 22;
-  const width = nextPiece.matrix[0].length * previewBlock;
-  const height = nextPiece.matrix.length * previewBlock;
-  const offsetX = (nextCanvas.width - width) / 2;
-  const offsetY = (nextCanvas.height - height) / 2;
+  const previewBlock = 15;
+  const slotHeight = nextCanvas.height / 3;
 
-  nextContext.save();
-  nextContext.translate(offsetX, offsetY);
-  for (let y = 0; y < nextPiece.matrix.length; y += 1) {
-    for (let x = 0; x < nextPiece.matrix[y].length; x += 1) {
-      if (nextPiece.matrix[y][x]) {
-        drawBlock(nextContext, x, y, COLORS[nextPiece.type], previewBlock);
+  nextPieces.slice(0, 3).forEach((piece, index) => {
+    const width = piece.matrix[0].length * previewBlock;
+    const height = piece.matrix.length * previewBlock;
+    const offsetX = (nextCanvas.width - width) / 2;
+    const offsetY = slotHeight * index + (slotHeight - height) / 2;
+
+    nextContext.save();
+    nextContext.translate(offsetX, offsetY);
+    for (let y = 0; y < piece.matrix.length; y += 1) {
+      for (let x = 0; x < piece.matrix[y].length; x += 1) {
+        if (piece.matrix[y][x]) {
+          drawBlock(nextContext, x, y, COLORS[piece.type], previewBlock);
+        }
       }
     }
-  }
-  nextContext.restore();
+    nextContext.restore();
+  });
 }
 
 function drawPreview(context, canvas, pieceType) {
